@@ -1,0 +1,21 @@
+# string (single-quoted are better)
+'yes';
+"no";
+
+# integer (funny)
+69;
+
+# float (funny too)
+69.;   # 69.0
+6.9;   # 6.9
+.69;   # 0.69
+69%;   # 0.69
+0.69%; # what the fuck
+
+# boolean
+true;
+false;
+yes;   # yes, yes (true)
+no;    # yes, no  (false)
+
+# laugh now
