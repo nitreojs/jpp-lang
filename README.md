@@ -15,9 +15,17 @@ epic.j++
 Yes
 
 ```j++
-nigger
+# code here ok
 ```
+
+## Where language
+
+Yes
 
 ## This README is so useful
 
 Yes
+
+## License
+
+DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE
