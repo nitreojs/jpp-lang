@@ -27,7 +27,7 @@ export class AssignmentStatement extends Statement {
   }
 
   public toString(): string {
-    return `${this.isConstant ? 'const': 'let'} ${this.variable} = ${this.expression.eval()}`;
+    return `${this.isConstant ? 'const': 'let'} ${this.variable} = ${this.expression.toString()}`;
   }
 }
 

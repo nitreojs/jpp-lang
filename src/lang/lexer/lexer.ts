@@ -162,6 +162,10 @@ export class Lexer {
     let current: char = this.peek();
 
     while (current !== quote) {
+      if (current === '\0') {
+        throw new Error('unexpected end');
+      }
+
       if (current === '\\') {
         current = this.next();
 
