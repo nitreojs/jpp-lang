@@ -20,7 +20,7 @@ vk.updates.use(sessionManager.middleware);
 vk.updates.use((context, next) => {
   for (const group of allowedGroups) {
     if (!(group in context.session)) {
-      context.session[group] = false;
+      context.session[group] = true;
     }
   }
 
@@ -65,11 +65,11 @@ hearManager.hear(/^\.\/settings$/i, (context) => {
   );
 });
 
-hearManager.hear(/^\.\/tokenize(?:\s+(?<code>.+)|$)/is, (context) => {
-  const { code } = context.$match.groups!;
+hearManager.hear(/^\.\/(?<command>parse|token?ize)(?<execute>\s+(--|—)execute)?(?:\s+(?<code>.+)|$)/is, (context) => {
+  const { code, command, execute } = context.$match.groups!;
 
   if (!code) {
-    return context.reply('Code is not specified');
+    return context.reply(`Nothing to ${command}`);
   }
 
   try {
@@ -77,6 +77,10 @@ hearManager.hear(/^\.\/tokenize(?:\s+(?<code>.+)|$)/is, (context) => {
     const tokens = lexer.tokenize();
     const parser = new JPP.Parser(tokens);
     const statements = parser.parse();
+
+    if (execute) {
+      statements.forEach(statement => statement.execute());
+    }
 
     const resultIfTokens = stripIndents`
       [Tokens]
@@ -90,17 +94,51 @@ hearManager.hear(/^\.\/tokenize(?:\s+(?<code>.+)|$)/is, (context) => {
 
     const result = stripIndents`
       [Source]
-      ${code}
+      ${code.trim()}
 
-      ${context.session.tokens ? resultIfTokens : ''}
+      ${context.session.tokens && tokens.length !== 0 ? resultIfTokens : ''}
 
-      ${context.session.statements ? resultIfStatements : ''}
+      ${context.session.statements && statements.length !== 0 ? resultIfStatements : ''}
     `;
 
     return context.reply(result);
   } catch (error) {
     return context.reply(error.message);
   }
+});
+
+hearManager.hear(/^\.\/variables$/i, (context) => {
+  return context.reply(
+    JPP.Variables.variables.map(
+      variable => `• ${variable.constant ? 'const ' : ''}${variable.name} = ${variable.value.toString()}`
+    ).join('\n')
+  );
+});
+
+hearManager.hear(/^\.\/variable(?:\s+(?<name>.+)|$)$/i, (context) => {
+  const { name } = context.$match.groups!;
+
+  if (!name) {
+    return context.reply('Variable\'s name is not specified');
+  }
+
+  const variable = JPP.Variables.variables.find(variable => variable.name === name);
+
+  if (!variable) {
+    return context.reply(`Variable '${name}' is not defined`);
+  }
+
+  return context.reply(`${variable.constant ? 'const ' : ''}${variable.name} = ${variable.value.toString()}`);
+});
+
+hearManager.hear(/^\.\/notation(?:\s+(?<notation>)|$)/i, (context) => {
+  const { notation } = context.$match.groups!;
+
+  if (!notation) {
+    return context.reply('Nothing to notate');
+  }
+
+
 });
 
 vk.updates.start().then(() => console.log('Started polling'));
