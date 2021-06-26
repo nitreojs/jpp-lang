@@ -1,1 +1,4 @@
 # uhhh
+node_modules/
+lib/
+src/bot/config.ts
