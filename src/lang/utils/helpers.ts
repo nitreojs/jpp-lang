@@ -1,7 +1,7 @@
 import { TokenType } from '../types';
 
 import * as OpTokens from './operator-tokens';
-import { tokens } from './constants';
+import { identifiers, tokens } from './constants';
 
 type char = string;
 
@@ -43,3 +43,5 @@ export const isOctal = (source: char) => '01234567'.includes(source);
 export const isIdentifierStart = (source: char) => /[A-Za-zА-Яа-я_$]/i.test(source);
 export const isIdentifierSymbol = (source: char) => /[A-Za-zА-Яа-я_$0-9]/i.test(source);
 export const isInteger = (source: number) => (source ^ 0) === source;
+export const isNewIdentifier = (source: string) => identifiers.find(([name]) => source === name) !== undefined;
+export const getNewIdentifier = (source: string) => identifiers.find(([name]) => source === name)![1];

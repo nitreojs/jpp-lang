@@ -1,21 +1,29 @@
-# string (single-quoted are better)
+# strings (single-quoted are better)
 'yes';
 "no";
 
-# integer (funny)
-69;
-
-# float (funny too)
-69.;   # 69.0
-6.9;   # 6.9
-.69;   # 0.69
-69%;   # 0.69
-0.69%; # what the fuck
+# numbers
+69;         # 69
+69.;        # 69
+6.9;        # 6.9
+.69;        # 0.69
+69%;        # 0.69
+0.69%;      # 0.0069 (what the fuck)
+0x69;       # 105, hex 69
+0o123;      # 83, octal 123
+0b10011010; # 154, binary 10011010
 
 # boolean
 true;
 false;
-yes;   # yes, yes (true)
-no;    # yes, no  (false)
+yes;   # yes (true)
+no;    # no  (false)
+
+# null
+null;  # wow such interesting
+
+# semicolons are not required btw
+# this code will be correctly parsed:
+0x1337 const a = 0b1001 let b = a + 0o777 print a + b
 
 # laugh now

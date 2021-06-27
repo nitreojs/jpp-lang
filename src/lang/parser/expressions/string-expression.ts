@@ -20,9 +20,5 @@ export class StringExpression extends Expression {
 inspectable(StringExpression, {
   stringify(expression: StringExpression, payload, context) {
     return `${context.stylize(expression.constructor.name, 'special')}(${expression.eval()}) ${context.inspect(payload)}`;
-  },
-
-  serialize(expression: StringExpression) {
-    return {};
   }
 });

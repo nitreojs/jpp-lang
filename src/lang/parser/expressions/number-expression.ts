@@ -20,9 +20,5 @@ export class NumberExpression extends Expression {
 inspectable(NumberExpression, {
   stringify(expression: NumberExpression, payload, context) {
     return `${context.stylize(expression.constructor.name, 'special')}(${expression.eval()}) ${context.inspect(payload)}`;
-  },
-
-  serialize(expression: NumberExpression) {
-    return {};
   }
 });

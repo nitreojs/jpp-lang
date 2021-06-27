@@ -13,4 +13,18 @@ export const tokens: Partial<Record<TokenType, string>> = {
   [TokenType.COLON]: ':',
   [TokenType.SEMICOLON]: ';',
   [TokenType.COMMA]: ',',
+  [TokenType.PERCENT]: '%',
+  [TokenType.DOT]: '.',
 };
+
+export const identifiers: [string, TokenType][] = [
+  ['let', TokenType.LET],
+  ['const', TokenType.CONST],
+  ['print', TokenType.PRINT],
+  ['type', TokenType.TYPE],
+  ['true', TokenType.TRUE],
+  ['false', TokenType.FALSE],
+  ['yes', TokenType.YES],
+  ['no', TokenType.NO],
+  ['null', TokenType.NULL]
+];

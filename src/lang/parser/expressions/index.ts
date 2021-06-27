@@ -6,3 +6,5 @@ export * from './parenthesis-expression';
 export * from './variable-expression';
 export * from './string-expression';
 export * from './bool-expression';
+export * from './null-expression';
+export * from './percent-expression';

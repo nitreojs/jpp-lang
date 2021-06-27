@@ -8,7 +8,6 @@ type char = string;
 export class Lexer {
   private tokens: Token[] = [];
   private position: number = 0;
-  private line: number = 1;
 
   constructor(private input: string) { }
 
@@ -23,7 +22,7 @@ export class Lexer {
         this.tokenizeBinaryNumber();
       } else if (current === '0' && next === 'o') {
         this.tokenizeOctalNumber();
-      } else if (Utils.isNumber(current)) {
+      } else if (Utils.isNumber(current) || (current === '.' && Utils.isNumber(next))) {
         this.tokenizeNumber();
       } else if (Utils.isOperator(current)) {
         this.tokenizeOperator();
@@ -31,6 +30,8 @@ export class Lexer {
         this.tokenizeIdentifier();
       } else if (current === '"' || current === "'") {
         this.tokenizeString(current);
+      } else if (current === '#') {
+        this.skipComment();
       } else {
         this.next();
       }
@@ -65,7 +66,11 @@ export class Lexer {
 
     let current: char = this.peek();
 
-    while (Utils.isBinary(current)) {
+    while (Utils.isNumber(current)) {
+      if (!Utils.isBinary(current)) {
+        throw new SyntaxError('binary numbers can only contain 0 or 1');
+      }
+
       buffer.push(current);
       current = this.next();
     }
@@ -83,7 +88,11 @@ export class Lexer {
 
     let current: char = this.peek();
 
-    while (Utils.isOctal(current)) {
+    while (Utils.isNumber(current)) {
+      if (!Utils.isOctal(current)) {
+        throw new SyntaxError('octal numbers can only contain digits from 0 to 7');
+      }
+
       buffer.push(current);
       current = this.next();
     }
@@ -98,26 +107,14 @@ export class Lexer {
     let buffer: char[] = [];
     let current: char = this.peek();
 
-    while (Utils.isNumber(current) || current === '.' || current === '%') {
+    while (Utils.isNumber(current) || current === '.') {
       if (current === '.' && buffer.includes('.')) {
         throw new TypeError('unexpected dot');
       }
 
-      if (current === '%' && buffer.includes('%')) {
-        throw new TypeError('unexpected percent');
-      }
-
       buffer.push(current);
 
-      if (current === '%') {
-        break;
-      }
-
       current = this.next();
-    }
-
-    if (buffer.includes('%')) {
-      buffer = (Number.parseFloat(buffer.join('').slice(0, -1)) / 100).toString().split('');
     }
 
     this.addToken({
@@ -146,37 +143,15 @@ export class Lexer {
     }
 
     let type: Types.TokenType = Types.TokenType.IDENTIFIER;
-    let string: string | undefined = buffer.join('');
+    let string: string = buffer.join('');
 
-    if (string === 'let') {
-      type = Types.TokenType.LET;
-      string = undefined;
-    } else if (string === 'const') {
-      type = Types.TokenType.CONST;
-      string = undefined;
-    } else if (string === 'print') {
-      type = Types.TokenType.PRINT;
-      string = undefined;
-    } else if (string === 'type') {
-      type = Types.TokenType.TYPE;
-      string = undefined;
-    } else if (string === 'true') {
-      type = Types.TokenType.TRUE;
-      string = undefined;
-    } else if (string === 'false') {
-      type = Types.TokenType.FALSE;
-      string = undefined;
-    } else if (string === 'yes') {
-      type = Types.TokenType.YES;
-      string = undefined;
-    } else if (string === 'no') {
-      type = Types.TokenType.NO;
-      string = undefined;
+    if (Utils.isNewIdentifier(string)) {
+      type = Utils.getNewIdentifier(string);
     }
 
     this.addToken({
       type,
-      value: string
+      value: type === Types.TokenType.IDENTIFIER ? buffer.join('') : undefined
     });
   }
 
@@ -189,6 +164,10 @@ export class Lexer {
     while (current !== quote) {
       if (current === '\0') {
         throw new Error('unexpected end');
+      }
+
+      if (current === '\n') {
+        throw new Error('expected token \'quote\', got \'eol\'');
       }
 
       if (current === '\\') {
@@ -228,10 +207,22 @@ export class Lexer {
     });
   }
 
+  private skipComment(): void {
+    this.next(); // skipping comment
+    
+    let buffer: char[] = [];
+    let current: char = this.peek();
+
+    while (current !== '\n' && current !== '\0') {
+      buffer.push(current);
+      current = this.next();
+    }
+  }
 
 
-  private next(): char {
-    this.position += 1;
+
+  private next(by: number = 1): char {
+    this.position += by;
 
     return this.peek();
   }

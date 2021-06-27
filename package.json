@@ -7,7 +7,8 @@
     "@vk-io/hear": "^1.1.0",
     "@vk-io/session": "^2.1.0",
     "common-tags": "^1.8.0",
-    "vk-io": "^4.3.1"
+    "vk-io": "^4.3.1",
+    "@types/node": "^15.12.4"
   },
   "scripts": {
     "start:bot": "yarn build && node ./lib/bot",
@@ -23,7 +24,6 @@
     "jpp-lang"
   ],
   "dependencies": {
-    "@types/node": "^15.12.4",
     "inspectable": "^1.2.0"
   },
   "author": "nitrojs",

@@ -7,6 +7,7 @@ export enum TokenType {
 
   PRINT = 'print',
   TYPE = 'type',
+  NULL = 'null',
 
   PLUS = 'plus',
   MINUS = 'minus',
@@ -18,6 +19,12 @@ export enum TokenType {
   COMMA = 'comma',
   LPAREN = 'lparen',
   RPAREN = 'rparen',
+  LBRACE = 'lbrace',
+  RBRACE = 'rbrace',
+  LBRACKET = 'lbracket',
+  RBRACKET = 'rbracket',
+  PERCENT = 'percent',
+  DOT = 'dot',
 
   TRUE = 'true',
   FALSE = 'false',

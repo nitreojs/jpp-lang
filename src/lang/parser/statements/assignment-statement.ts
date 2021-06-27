@@ -2,20 +2,24 @@ import { inspectable } from 'inspectable';
 
 import { Statement } from './statement';
 
-import { Expression } from '../expressions';
-import { Variable, Variables } from '../../variables';
+import { Expression, NullExpression } from '../expressions';
+import { NullValue, Variable, Variables } from '../../variables';
 
 export class AssignmentStatement extends Statement {
   constructor(
     public isConstant: boolean,
     public variable: string,
-    public expression: Expression
+    public expression: Expression = new NullExpression()
   ) {
     super();
   }
 
   public execute(): void {
     const value = this.expression.eval();
+
+    if (this.isConstant && value instanceof NullValue) {
+      throw new TypeError('\'const\' variables must be defined');
+    }
 
     Variables.add(
       new Variable({

@@ -1,7 +1,7 @@
 import { Token } from '../lexer/token';
 import { TokenType } from '../types';
 
-import { BinaryExpression, Expression, BoolExpression, ParenthesisExpression, StringExpression, UnaryExpression, VariableExpression, NumberExpression } from './expressions';
+import { BinaryExpression, Expression, BoolExpression, ParenthesisExpression, StringExpression, UnaryExpression, VariableExpression, NumberExpression, NullExpression, PercentExpression } from './expressions';
 import { AssignmentStatement, PrintStatement, Statement } from './statements';
 
 export class Parser {
@@ -51,9 +51,22 @@ export class Parser {
       const name: string = this.get().value!;
 
       this.consume(TokenType.IDENTIFIER);
-      this.consume(TokenType.EQ);
 
-      return new AssignmentStatement(isConstant, name, this.expression());
+      this.match(TokenType.SEMICOLON);
+
+      if (this.match(TokenType.EQ)) {
+        const expression: Expression = this.expression();
+
+        this.match(TokenType.SEMICOLON);
+
+        return new AssignmentStatement(isConstant, name, expression);
+      }
+
+      return new AssignmentStatement(isConstant, name);
+    }
+
+    if (this.match(TokenType.SEMICOLON)) {
+      return null;
     }
 
     this.expression();
@@ -62,6 +75,8 @@ export class Parser {
   }
 
   private expression(): Expression {
+    while (this.match(TokenType.SEMICOLON));
+
     const expression: Expression = this.additive();
 
     this.match(TokenType.SEMICOLON);
@@ -122,7 +137,23 @@ export class Parser {
       return new UnaryExpression(TokenType.PLUS, this.unary());
     }
 
-    return this.primary();
+    return this.postfix();
+  }
+
+  private postfix(): Expression {
+    let expression: Expression = this.primary();
+
+    while (true) {
+      if (this.match(TokenType.PERCENT)) {
+        expression = new PercentExpression(expression);
+
+        continue;
+      }
+
+      break;
+    }
+
+    return expression;
   }
 
   private primary(): Expression {
@@ -130,6 +161,10 @@ export class Parser {
 
     if (this.match(TokenType.NUMBER)) {
       let value: number = Number.parseFloat(current.value!);
+
+      if (current.value!.startsWith('.')) {
+        value = Number.parseFloat(`0${current.value}`);
+      }
 
       if (current.value!.startsWith('0x')) {
         value = Number.parseInt(current.value!);
@@ -154,6 +189,10 @@ export class Parser {
       return new BoolExpression(false);
     }
 
+    if (this.match(TokenType.NULL)) {
+      return new NullExpression();
+    }
+
     if (this.match(TokenType.IDENTIFIER)) {
       return new VariableExpression(current.value!);
     }
@@ -170,7 +209,9 @@ export class Parser {
       return expression;
     }
 
-    throw new Error(`unknown expression type: ${current.type}`);
+    this.match(TokenType.SEMICOLON);
+
+    throw new Error(`unknown expression type '${current.type}'`);
   }
 
 
@@ -184,6 +225,16 @@ export class Parser {
     this.position += 1;
 
     return current;
+  }
+
+  private lookMatch(type: TokenType): boolean {
+    const current: Token = this.get();
+
+    if (current.type !== type) {
+      return false;
+    }
+
+    return true;
   }
 
   private match(type: TokenType): boolean {

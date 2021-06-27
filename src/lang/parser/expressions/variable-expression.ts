@@ -4,6 +4,7 @@ import { Expression } from './expression';
 
 import { Variables } from '../../variables';
 import { Value } from '../../variables/values';
+import { VariableNotDefinedError } from '../../errors';
 
 export class VariableExpression extends Expression {
   constructor(public name: string) {
@@ -12,7 +13,7 @@ export class VariableExpression extends Expression {
 
   public eval(): Value {
     if (!Variables.exists(this.name)) {
-      throw new Error(`variable '${this.name}' is not defined`);
+      throw new VariableNotDefinedError(this.name);
     }
 
     return Variables.get(this.name);

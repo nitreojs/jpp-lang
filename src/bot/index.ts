@@ -127,7 +127,9 @@ hearManager.hear(/^\.\/(?<command>parse|token?ize)(?<execute>\s+(--|—)execute)
 
     return context.reply(result);
   } catch (error) {
-    return context.reply(error.message);
+    console.log(error);
+
+    return context.reply(`Unexpected ${error.name}: ${error.message}`);
   }
 });
 
