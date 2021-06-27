@@ -65,7 +65,7 @@ hearManager.hear(/^\.\/settings$/i, (context) => {
   );
 });
 
-hearManager.hear(/^\.\/(?<command>parse|token?ize)(?<execute>\s+(--|—)execute)?(?:\s+(?<code>.+)|$)/is, (context) => {
+hearManager.hear(/^\.\/(?<command>parse|token?ize)(?<execute>\s+(--|—)execute)?(?:\s+(?<code>.+)|$)/is, async (context) => {
   const { code, command, execute } = context.$match.groups!;
 
   if (!code) {
@@ -78,9 +78,31 @@ hearManager.hear(/^\.\/(?<command>parse|token?ize)(?<execute>\s+(--|—)execute)
     const parser = new JPP.Parser(tokens);
     const statements = parser.parse();
 
+    let output: string = '';
+
     if (execute) {
+      const originalStdoutWrite = process.stdout.write.bind(process.stdout);
+
+      // @ts-ignore
+      process.stdout.write = (chunk, encoding, callback) => {
+        if (typeof chunk === 'string') {
+          output += chunk;
+        }
+
+        return originalStdoutWrite(chunk, encoding, callback);
+      };
+
       statements.forEach(statement => statement.execute());
     }
+
+    output = output.trim()
+      .replace(/\u001b\[[0-9;]+m/g, '')
+      .replace(/\033\[[0-9;]*m/g, '');
+
+    const resultIfOutput = stripIndents`
+      [Output]
+      ${output}
+    `;
 
     const resultIfTokens = stripIndents`
       [Tokens]
@@ -95,6 +117,8 @@ hearManager.hear(/^\.\/(?<command>parse|token?ize)(?<execute>\s+(--|—)execute)
     const result = stripIndents`
       [Source]
       ${code.trim()}
+
+      ${output ? resultIfOutput : ''}
 
       ${context.session.tokens && tokens.length !== 0 ? resultIfTokens : ''}
 
