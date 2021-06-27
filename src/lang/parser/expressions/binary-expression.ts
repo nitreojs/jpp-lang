@@ -20,22 +20,22 @@ export class BinaryExpression extends Expression {
     const rightVal: Value = this.right.eval();
 
     if (leftVal instanceof StringValue) {
+      if (!(rightVal instanceof StringValue)) {
+        throw new TypeError('expected right side to be string');
+      }
+
       if (this.operator === TokenType.PLUS) {
         return new StringValue(leftVal.asString() + rightVal.asString());
       }
-  
-      if (this.operator === TokenType.ASTERISK) {
-        if (rightVal instanceof NumberValue) {
-          return new StringValue(leftVal.asString().repeat(rightVal.asNumber()));
-        }
 
-        throw new Error('no');
-      }
-
-      throw new Error('unknown operator for string');
+      throw new Error(`unknown operator '${this.operator}' for string`);
     }
 
     if (leftVal instanceof NumberValue) {
+      if (!(rightVal instanceof NumberValue)) {
+        throw new TypeError('expected right side to be number');
+      }
+
       if (this.operator === TokenType.PLUS) {
         return new NumberValue(leftVal.asNumber() + rightVal.asNumber());
       }
@@ -45,10 +45,6 @@ export class BinaryExpression extends Expression {
       }
   
       if (this.operator === TokenType.ASTERISK) {
-        if (rightVal instanceof StringValue) {
-          return new StringValue(rightVal.asString().repeat(leftVal.asNumber()));
-        }
-
         return new NumberValue(leftVal.asNumber() * rightVal.asNumber());
       }
   

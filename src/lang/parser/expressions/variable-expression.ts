@@ -12,7 +12,7 @@ export class VariableExpression extends Expression {
 
   public eval(): Value {
     if (!Variables.exists(this.name)) {
-      throw new Error(`Variable '${this.name}' is not defined`);
+      throw new Error(`variable '${this.name}' is not defined`);
     }
 
     return Variables.get(this.name);
