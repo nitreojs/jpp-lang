@@ -5,3 +5,4 @@ export * from './unary-expression';
 export * from './parenthesis-expression';
 export * from './variable-expression';
 export * from './string-expression';
+export * from './bool-expression';

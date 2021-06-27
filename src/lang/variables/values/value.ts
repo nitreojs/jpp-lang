@@ -6,4 +6,8 @@ export class Value {
   public asString(): string {
     throw new Error('not implemented');
   }
+
+  public asBool(): boolean {
+    throw new Error('not implemented');
+  }
 }

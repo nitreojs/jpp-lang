@@ -21,6 +21,10 @@ export class StringValue extends Value {
     return this.value;
   }
 
+  public asBool(): boolean {
+    return this.value !== '';
+  }
+
   public toString(): string {
     return `"${this.asString()}"`;
   }

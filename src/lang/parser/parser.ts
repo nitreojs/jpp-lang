@@ -1,7 +1,7 @@
 import { Token } from '../lexer/token';
 import { TokenType } from '../types';
 
-import { BinaryExpression, Expression, NumberExpression, ParenthesisExpression, StringExpression, UnaryExpression, VariableExpression } from './expressions';
+import { BinaryExpression, Expression, BoolExpression, ParenthesisExpression, StringExpression, UnaryExpression, VariableExpression, NumberExpression } from './expressions';
 import { AssignmentStatement, PrintStatement, Statement } from './statements';
 
 export class Parser {
@@ -38,10 +38,7 @@ export class Parser {
     const current: Token = this.get();
 
     // let/const identifier [colon identifier] = expression
-    if (
-      (current.type === TokenType.LET || current.type === TokenType.CONST) &&
-      this.get(1).type === TokenType.IDENTIFIER
-    ) {
+    if (current.type === TokenType.LET || current.type === TokenType.CONST) {
       let isConstant: boolean = false;
 
       if (current.type === TokenType.LET) {
@@ -149,6 +146,14 @@ export class Parser {
       return new NumberExpression(value);
     }
 
+    if (this.match(TokenType.TRUE) || this.match(TokenType.YES)) {
+      return new BoolExpression(true);
+    }
+
+    if (this.match(TokenType.FALSE) || this.match(TokenType.NO)) {
+      return new BoolExpression(false);
+    }
+
     if (this.match(TokenType.IDENTIFIER)) {
       return new VariableExpression(current.value!);
     }
@@ -165,7 +170,7 @@ export class Parser {
       return expression;
     }
 
-    throw new Error(`Unknown expression type: ${current.type}`);
+    throw new Error(`unknown expression type: ${current.type}`);
   }
 
 
@@ -173,7 +178,7 @@ export class Parser {
     const current: Token = this.get();
 
     if (current.type !== type) {
-      throw new TypeError(`token ${current.type} does not match ${type}`);
+      throw new TypeError(`expected token '${type}', got '${current.type}'`);
     }
 
     this.position += 1;

@@ -98,13 +98,26 @@ export class Lexer {
     let buffer: char[] = [];
     let current: char = this.peek();
 
-    while (Utils.isNumber(current) || current === '.') {
+    while (Utils.isNumber(current) || current === '.' || current === '%') {
       if (current === '.' && buffer.includes('.')) {
-        throw new TypeError('Unexpected dot');
+        throw new TypeError('unexpected dot');
+      }
+
+      if (current === '%' && buffer.includes('%')) {
+        throw new TypeError('unexpected percent');
       }
 
       buffer.push(current);
+
+      if (current === '%') {
+        break;
+      }
+
       current = this.next();
+    }
+
+    if (buffer.includes('%')) {
+      buffer = (Number.parseFloat(buffer.join('').slice(0, -1)) / 100).toString().split('');
     }
 
     this.addToken({
@@ -146,6 +159,18 @@ export class Lexer {
       string = undefined;
     } else if (string === 'type') {
       type = Types.TokenType.TYPE;
+      string = undefined;
+    } else if (string === 'true') {
+      type = Types.TokenType.TRUE;
+      string = undefined;
+    } else if (string === 'false') {
+      type = Types.TokenType.FALSE;
+      string = undefined;
+    } else if (string === 'yes') {
+      type = Types.TokenType.YES;
+      string = undefined;
+    } else if (string === 'no') {
+      type = Types.TokenType.NO;
       string = undefined;
     }
 

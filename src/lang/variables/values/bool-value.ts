@@ -2,30 +2,30 @@ import { inspectable } from 'inspectable';
 
 import { Value } from './value';
 
-export class NumberValue extends Value {
-  constructor(public value: number) {
+export class BoolValue extends Value {
+  constructor(public value: boolean) {
     super();
   }
 
   public asNumber(): number {
-    return this.value;
+    return this.value ? 1 : 0;
   }
 
   public asString(): string {
-    return this.value.toString();
+    return this.value ? 'true' : 'false';
   }
 
   public asBool(): boolean {
-    return this.value !== 0;
+    return this.value;
   }
 
   public toString(): string {
-    return this.asNumber().toString();
+    return this.asString();
   }
 }
 
-inspectable(NumberValue, {
-  stringify(value: NumberValue, payload, context) {
+inspectable(BoolValue, {
+  stringify(value: BoolValue, payload, context) {
     return `${context.stylize(value.constructor.name, 'special')}(${context.stylize(value.toString(), 'string')})`;
   }
 });

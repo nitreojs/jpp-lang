@@ -19,6 +19,11 @@ export enum TokenType {
   LPAREN = 'lparen',
   RPAREN = 'rparen',
 
+  TRUE = 'true',
+  FALSE = 'false',
+  YES = 'yes',
+  NO = 'no',
+
   LET = 'let',
   CONST = 'const',
 
