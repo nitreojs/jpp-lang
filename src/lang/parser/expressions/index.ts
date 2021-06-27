@@ -8,3 +8,4 @@ export * from './string-expression';
 export * from './bool-expression';
 export * from './null-expression';
 export * from './percent-expression';
+export * from './conditional-expression';

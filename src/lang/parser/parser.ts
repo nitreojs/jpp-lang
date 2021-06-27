@@ -1,8 +1,8 @@
 import { Token } from '../lexer/token';
 import { TokenType } from '../types';
 
-import { BinaryExpression, Expression, BoolExpression, ParenthesisExpression, StringExpression, UnaryExpression, VariableExpression, NumberExpression, NullExpression, PercentExpression } from './expressions';
-import { AssignmentStatement, PrintStatement, Statement } from './statements';
+import { BinaryExpression, Expression, BoolExpression, ParenthesisExpression, StringExpression, UnaryExpression, VariableExpression, NumberExpression, NullExpression, PercentExpression, ConditionalExpression } from './expressions';
+import { AssignmentStatement, IfStatement, PrintStatement, Statement } from './statements';
 
 export class Parser {
   private static EOF = new Token({ type: TokenType.EOF });
@@ -29,6 +29,10 @@ export class Parser {
   private statement(): Statement | null {
     if (this.match(TokenType.PRINT)) {
       return new PrintStatement(this.expression());
+    }
+
+    if (this.match(TokenType.IF)) {
+      return this.ifElse();
     }
 
     return this.assignmentStatement();
@@ -74,12 +78,95 @@ export class Parser {
     return null;
   }
 
+  private ifElse(): Statement | null {
+    const condition: Expression = this.expression();
+    const ifStatement: Statement = this.statement()!;
+    let elseStatement: Statement | undefined;
+
+    if (this.match(TokenType.ELSE)) {
+      elseStatement = this.statement()!;
+    }
+
+    return new IfStatement(condition, ifStatement, elseStatement);
+  }
+
   private expression(): Expression {
     while (this.match(TokenType.SEMICOLON));
 
-    const expression: Expression = this.additive();
+    const expression: Expression = this.logicalOr();
 
     this.match(TokenType.SEMICOLON);
+
+    return expression;
+  }
+
+  private logicalOr(): Expression {
+    let expression: Expression = this.logicalAnd();
+
+    while (true) {
+      if (this.match(TokenType.BARBAR)) {
+        expression = new ConditionalExpression(expression, TokenType.BARBAR, this.logicalAnd());
+
+        continue;
+      }
+
+      break;
+    }
+
+    return expression;
+  }
+
+  private logicalAnd(): Expression {
+    let expression: Expression = this.equality();
+
+    while (true) {
+      if (this.match(TokenType.AMPAMP)) {
+        expression = new ConditionalExpression(expression, TokenType.AMPAMP, this.logicalAnd());
+
+        continue;
+      }
+
+      break;
+    }
+
+    return expression;
+  }
+
+  private equality(): Expression {
+    const expression: Expression = this.conditional();
+
+    if (this.match(TokenType.EQEQ)) {
+      return new ConditionalExpression(expression, TokenType.EQEQ, this.conditional());
+    }
+
+    if (this.match(TokenType.EXCLEQ)) {
+      return new ConditionalExpression(expression, TokenType.EXCLEQ, this.conditional());
+    }
+
+    return expression;
+  }
+
+  private conditional(): Expression {
+    let expression: Expression = this.additive();
+
+    const conditionalOperators: TokenType[] = [
+      TokenType.LT,
+      TokenType.LTEQ,
+      TokenType.GT,
+      TokenType.GTEQ
+    ];
+
+    while (true) {
+      for (const operator of conditionalOperators) {
+        if (this.match(operator)) {
+          expression = new ConditionalExpression(expression, operator, this.additive());
+
+          continue;
+        }
+      }
+
+      break;
+    }
 
     return expression;
   }

@@ -21,6 +21,10 @@ export class AssignmentStatement extends Statement {
       throw new TypeError('\'const\' variables must be defined');
     }
 
+    if (Variables.exists(this.variable)) {
+      throw new Error(`variable '${this.variable}' already exists`);
+    }
+
     Variables.add(
       new Variable({
         constant: this.isConstant,

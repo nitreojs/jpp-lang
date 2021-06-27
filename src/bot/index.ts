@@ -157,14 +157,4 @@ hearManager.hear(/^\.\/variable(?:\s+(?<name>.+)|$)$/i, (context) => {
   return context.reply(`${variable.constant ? 'const ' : ''}${variable.name} = ${variable.value.toString()}`);
 });
 
-hearManager.hear(/^\.\/notation(?:\s+(?<notation>)|$)/i, (context) => {
-  const { notation } = context.$match.groups!;
-
-  if (!notation) {
-    return context.reply('Nothing to notate');
-  }
-
-
-});
-
 vk.updates.start().then(() => console.log('Started polling'));

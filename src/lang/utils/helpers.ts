@@ -1,7 +1,6 @@
 import { TokenType } from '../types';
 
-import * as OpTokens from './operator-tokens';
-import { identifiers, tokens } from './constants';
+import { IDENTIFIERS, OPERATORS, TOKENS } from './constants';
 
 type char = string;
 
@@ -34,14 +33,14 @@ export const filterPayload = (payload: Record<string, any>): Record<string, any>
 
 export const isWhitespace = (source: char) => /[\s\n\t\r]/.test(source);
 export const isNumber = (source: char) => !isWhitespace(source) && !Number.isNaN(+source);
-export const isOperator = (source: char) => OpTokens.chars.includes(source);
-export const getOperator = (source: char) => OpTokens.tokens[OpTokens.chars.indexOf(source)];
-export const getTokenChar = (source: TokenType) => tokens[source]!;
+export const isOperator = (source: char) => OPERATORS.has(source);
+export const getOperator = (source: char) => OPERATORS.get(source);
+export const getTokenChar = (source: TokenType) => TOKENS[source]!;
 export const isHex = (source: char) => isNumber(source) || 'abcdef'.includes(source.toLowerCase());
 export const isBinary = (source: char) => '01'.includes(source);
 export const isOctal = (source: char) => '01234567'.includes(source);
 export const isIdentifierStart = (source: char) => /[A-Za-zА-Яа-я_$]/i.test(source);
 export const isIdentifierSymbol = (source: char) => /[A-Za-zА-Яа-я_$0-9]/i.test(source);
 export const isInteger = (source: number) => (source ^ 0) === source;
-export const isNewIdentifier = (source: string) => identifiers.find(([name]) => source === name) !== undefined;
-export const getNewIdentifier = (source: string) => identifiers.find(([name]) => source === name)![1];
+export const isNewIdentifier = (source: string) => IDENTIFIERS.find(([name]) => source === name) !== undefined;
+export const getNewIdentifier = (source: string) => IDENTIFIERS.find(([name]) => source === name)![1];

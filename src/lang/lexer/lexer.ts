@@ -124,13 +124,20 @@ export class Lexer {
   }
 
   private tokenizeOperator(): void {
+    let buffer: string[] = [];
     let current: char = this.peek();
 
-    this.addToken({
-      type: Utils.getOperator(current)
-    });
+    while (true) {
+      const text: string = buffer.join('');
 
-    this.next();
+      if (!Utils.isOperator(text + current) && text !== '') {
+        this.addToken({ type: Utils.getOperator(text)! });
+        break;
+      }
+
+      buffer.push(current);
+      current = this.next();
+    }
   }
 
   private tokenizeIdentifier(): void {
@@ -213,7 +220,7 @@ export class Lexer {
     let buffer: char[] = [];
     let current: char = this.peek();
 
-    while (current !== '\n' && current !== '\0') {
+    while (!'\r\n\0'.includes(current)) {
       buffer.push(current);
       current = this.next();
     }

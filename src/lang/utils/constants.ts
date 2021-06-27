@@ -1,23 +1,37 @@
 import { TokenType } from '../types';
 
-export const tokens: Partial<Record<TokenType, string>> = {
+export const TOKENS: Partial<Record<TokenType, string>> = {
   [TokenType.PLUS]: '+',
   [TokenType.MINUS]: '-',
   [TokenType.ASTERISK]: '*',
   [TokenType.SLASH]: '/',
   [TokenType.LPAREN]: '(',
   [TokenType.RPAREN]: ')',
-  [TokenType.EQ]: '=',
   [TokenType.LET]: 'let',
   [TokenType.CONST]: 'const',
+  [TokenType.IF]: 'const',
+  [TokenType.ELSE]: 'const',
   [TokenType.COLON]: ':',
   [TokenType.SEMICOLON]: ';',
   [TokenType.COMMA]: ',',
   [TokenType.PERCENT]: '%',
   [TokenType.DOT]: '.',
+  [TokenType.DOTDOTDOT]: '...',
+  [TokenType.ARROW]: '->',
+  [TokenType.EQ]: '=',
+  [TokenType.EXCLEQ]: '!=',
+  [TokenType.EQEQ]: '==',
+  [TokenType.LT]: '<',
+  [TokenType.LTEQ]: '<=',
+  [TokenType.GT]: '>',
+  [TokenType.GTEQ]: '>=',
+  [TokenType.BAR]: '|',
+  [TokenType.BARBAR]: '||',
+  [TokenType.AMP]: '&',
+  [TokenType.AMPAMP]: '&&',
 };
 
-export const identifiers: [string, TokenType][] = [
+export const IDENTIFIERS: [string, TokenType][] = [
   ['let', TokenType.LET],
   ['const', TokenType.CONST],
   ['print', TokenType.PRINT],
@@ -26,5 +40,41 @@ export const identifiers: [string, TokenType][] = [
   ['false', TokenType.FALSE],
   ['yes', TokenType.YES],
   ['no', TokenType.NO],
-  ['null', TokenType.NULL]
+  ['null', TokenType.NULL],
+  ['if', TokenType.IF],
+  ['else', TokenType.ELSE]
 ];
+
+export const OPERATORS: Map<string, TokenType> = new Map([
+  ['+', TokenType.PLUS],
+  ['-', TokenType.MINUS],
+  ['*', TokenType.ASTERISK],
+  ['/', TokenType.SLASH],
+
+  ['(', TokenType.LPAREN],
+  [')', TokenType.RPAREN],
+  ['[', TokenType.LBRACKET],
+  [']', TokenType.RBRACKET],
+  ['{', TokenType.LBRACE],
+  ['}', TokenType.RBRACE],
+  
+  [':', TokenType.COLON],
+  [';', TokenType.SEMICOLON],
+  [',', TokenType.COMMA],
+  ['%', TokenType.PERCENT],
+  ['.', TokenType.DOT],
+  ['...', TokenType.DOTDOTDOT],
+  ['->', TokenType.ARROW],
+  
+  ['=', TokenType.EQ],
+  ['!=', TokenType.EXCLEQ],
+  ['==', TokenType.EQEQ],
+  ['<', TokenType.LT],
+  ['<=', TokenType.LTEQ],
+  ['>', TokenType.GT],
+  ['>=', TokenType.GTEQ],
+  ['|', TokenType.BAR],
+  ['||', TokenType.BARBAR],
+  ['&', TokenType.AMP],
+  ['&&', TokenType.AMPAMP]
+]);
