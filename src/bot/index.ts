@@ -32,7 +32,7 @@ vk.updates.use(hearManager.middleware);
 
 hearManager.hear(/^\.\/(?<group>enable|disable)(?:\s+(?<type>.+)|$)$/i, (context) => {
   const { group, type: rawType } = context.$match.groups!;
-  const changeTo: boolean = /enable/i.test(group) ? true : false;
+  const changeTo: boolean = /enable/i.test(group);
 
   if (!rawType) {
     return context.reply(stripIndents`
