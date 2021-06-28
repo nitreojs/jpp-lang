@@ -19,6 +19,6 @@ export class PercentExpression extends Expression {
 
 inspectable(PercentExpression, {
   stringify(expression: PercentExpression, payload, context) {
-    return `${context.stylize(expression.constructor.name, 'special')}(${expression.toString()}) ${context.inspect(payload)}`;
+    return `${context.stylize(expression.constructor.name, 'special')}(${expression.toString()})`;
   }
 });

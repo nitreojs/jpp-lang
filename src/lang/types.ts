@@ -62,6 +62,7 @@ export interface TokenOptions {
 }
 
 export interface VariableOptions {
+  internal?: boolean;
   constant?: boolean;
   name: string;
   value: Value;

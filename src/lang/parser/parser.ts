@@ -91,8 +91,8 @@ export class Parser {
     return this.expression();
   }
 
-  private ifElse(): Expression | null {
-    const condition: Expression = this.expression();
+  private ifElse(): Expression {
+    const condition: Expression = this.blockOrExpression();
 
     const ifExpression: Expression = this.blockOrExpression()!;
     let elseExpression: Expression | undefined;
@@ -109,19 +109,24 @@ export class Parser {
 
     const expression: Expression = this.logicalOr();
 
-    this.match(TokenType.SEMICOLON);
-
     return expression;
   }
 
   private logicalOr(): Expression {
     let expression: Expression = this.logicalAnd();
 
-    while (true) {
-      if (this.match(TokenType.BARBAR)) {
-        expression = new ConditionalExpression(expression, TokenType.BARBAR, this.logicalAnd());
+    const conditionalOperators: TokenType[] = [
+      TokenType.BARBAR,
+      TokenType.OR
+    ];
 
-        continue;
+    while (true) {
+      for (const operator of conditionalOperators) {
+        if (this.match(operator)) {
+          expression = new ConditionalExpression(expression, operator, this.logicalAnd());
+
+          continue;
+        }
       }
 
       break;
@@ -133,11 +138,18 @@ export class Parser {
   private logicalAnd(): Expression {
     let expression: Expression = this.equality();
 
-    while (true) {
-      if (this.match(TokenType.AMPAMP)) {
-        expression = new ConditionalExpression(expression, TokenType.AMPAMP, this.logicalAnd());
+    const conditionalOperators: TokenType[] = [
+      TokenType.AMPAMP,
+      TokenType.AND
+    ];
 
-        continue;
+    while (true) {
+      for (const operator of conditionalOperators) {
+        if (this.match(operator)) {
+          expression = new ConditionalExpression(expression, operator, this.logicalAnd());
+
+          continue;
+        }
       }
 
       break;

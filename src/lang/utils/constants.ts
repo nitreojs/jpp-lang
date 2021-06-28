@@ -27,8 +27,10 @@ export const TOKENS: Partial<Record<TokenType, string>> = {
   [TokenType.GTEQ]: '>=',
   [TokenType.BAR]: '|',
   [TokenType.BARBAR]: '||',
+  [TokenType.OR]: 'or',
   [TokenType.AMP]: '&',
   [TokenType.AMPAMP]: '&&',
+  [TokenType.AND]: 'and',
 };
 
 export const IDENTIFIERS: [string, TokenType][] = [
@@ -42,7 +44,9 @@ export const IDENTIFIERS: [string, TokenType][] = [
   ['no', TokenType.NO],
   ['null', TokenType.NULL],
   ['if', TokenType.IF],
-  ['else', TokenType.ELSE]
+  ['else', TokenType.ELSE],
+  ['or', TokenType.OR],
+  ['and', TokenType.AND]
 ];
 
 export const OPERATORS: Map<string, TokenType> = new Map([
@@ -75,6 +79,8 @@ export const OPERATORS: Map<string, TokenType> = new Map([
   ['>=', TokenType.GTEQ],
   ['|', TokenType.BAR],
   ['||', TokenType.BARBAR],
+  ['or', TokenType.OR],
   ['&', TokenType.AMP],
-  ['&&', TokenType.AMPAMP]
+  ['&&', TokenType.AMPAMP],
+  ['and', TokenType.AND],
 ]);

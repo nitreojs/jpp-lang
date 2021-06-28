@@ -6,6 +6,7 @@ import { inspect } from 'util';
 
 import * as config from './config';
 import * as JPP from '../lang';
+import { Variable } from '../lang';
 
 const allowedGroups: string[] = [
   'tokens', 'expressions'
@@ -134,11 +135,32 @@ hearManager.hear(/^\.\/(?<command>parse|token?ize)(?<execute>\s+(--|—)execute)
 });
 
 hearManager.hear(/^\.\/variables$/i, (context) => {
-  return context.reply(
-    JPP.Variables.variables.map(
-      variable => `• ${variable.constant ? 'const ' : ''}${variable.name} = ${variable.value.toString()}`
-    ).join('\n')
+  const internalVars: Variable[] = JPP.Variables.variables.filter(variable => variable.internal);
+  const userDefinedVars: Variable[] = JPP.Variables.variables.filter(variable => !variable.internal);
+
+  const internal: string = (
+    internalVars
+      .map(variable => `const ${variable.name} = ${variable.value.toString()};`)
+      .join('\n')
   );
+
+  const userDefined: string = (
+    userDefinedVars
+      .map(variable => `${variable.constant ? 'const' : 'let'} ${variable.name} = ${variable.value.toString()};`)
+      .join('\n')
+  );
+
+  const userDefinedIfUserDefined = stripIndents`
+    [User Defined]
+    ${userDefined}
+  `
+
+  return context.reply(stripIndents`
+    [Internal]
+    ${internal}
+
+    ${ userDefinedVars.length ? userDefinedIfUserDefined : '' }
+  `);
 });
 
 hearManager.hear(/^\.\/variable(?:\s+(?<name>.+)|$)$/i, (context) => {
@@ -154,7 +176,9 @@ hearManager.hear(/^\.\/variable(?:\s+(?<name>.+)|$)$/i, (context) => {
     return context.reply(`Variable '${name}' is not defined`);
   }
 
-  return context.reply(`${variable.constant ? 'const ' : ''}${variable.name} = ${variable.value.toString()}`);
+  const declarator: string = variable.internal ? '(internal) const' : variable.constant ? 'const' : 'let';
+
+  return context.reply(`${declarator} ${variable.name} = ${variable.value.toString()};`);
 });
 
 vk.updates.start().then(() => console.log('Started polling'));

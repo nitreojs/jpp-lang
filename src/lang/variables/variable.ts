@@ -6,6 +6,10 @@ import { Value } from './values';
 export class Variable {
   constructor(private options: VariableOptions) { }
 
+  public get internal(): boolean {
+    return this.options.internal ?? false;
+  }
+
   public get constant(): boolean {
     return this.options.constant ?? false;
   }
@@ -19,7 +23,9 @@ export class Variable {
   }
 
   public toString(): string {
-    return `${this.constant ? 'const': 'let'} ${this.name} = ${this.value}`;
+    const declarator: string = this.internal ? '(internal) const' : this.constant ? 'const' : 'let';
+
+    return `${declarator} ${this.name} = ${this.value}`;
   }
 }
 

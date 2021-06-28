@@ -10,6 +10,6 @@ export class Expression {
 
 inspectable(Expression, {
   stringify(expression: Expression, payload, context) {
-    return `${context.stylize(expression.constructor.name, 'special')}(${expression.eval()}) ${context.inspect(payload)}`;
+    return `${context.stylize(expression.constructor.name, 'special')}(${expression.eval()})`;
   }
 });

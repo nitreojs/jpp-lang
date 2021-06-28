@@ -48,8 +48,6 @@ export class SyntaxNotation {
   }
 
   public static match(token: Token, rule: Rule): boolean {
-    console.log('match', { token, rule });
-
     if (rule instanceof Identifier) {
       const definition = definitions.get(rule.name)!;
 
@@ -88,8 +86,6 @@ export class SyntaxNotation {
       for (let i = 0; i < rule.rules.length; i++) {
         const tRule = rule.rules[i];
         const tToken = tokens[i];
-
-        console.log({ i, rule: tRule, token: tToken });
 
         if (!SyntaxNotation.match(tToken, tRule)) {
           return false;

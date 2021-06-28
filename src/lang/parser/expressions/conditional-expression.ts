@@ -23,10 +23,12 @@ export class ConditionalExpression extends Expression {
       switch (this.operator) {
         case TokenType.EQEQ:
         case TokenType.AMPAMP:
+        case TokenType.AND:
           return new BoolValue(rightVal instanceof NullValue);
         case TokenType.EXCLEQ:
           return new BoolValue(!(rightVal instanceof NullValue));
         case TokenType.BARBAR:
+        case TokenType.OR:
           return new NullValue();
         case TokenType.LT:
         case TokenType.LTEQ:
@@ -49,8 +51,10 @@ export class ConditionalExpression extends Expression {
         case TokenType.GTEQ:
           return new BoolValue(false);
         case TokenType.BARBAR:
+        case TokenType.OR:
           return leftVal.asString() === '' ? rightVal : leftVal;
         case TokenType.AMPAMP:
+        case TokenType.AND:
           return new BoolValue(leftVal.asString() !== '' && rightVal.asString() !== '');
       }
     }
@@ -70,8 +74,10 @@ export class ConditionalExpression extends Expression {
         case TokenType.GTEQ:
           return new BoolValue(leftVal.asNumber() >= rightVal.asNumber());
         case TokenType.BARBAR:
+        case TokenType.OR:
           return leftVal.asNumber() === 0 ? rightVal : leftVal;
         case TokenType.AMPAMP:
+        case TokenType.AND:
           return new BoolValue(leftVal.asNumber() !== 0 && rightVal.asNumber() !== 0);
       }
     }
@@ -91,8 +97,10 @@ export class ConditionalExpression extends Expression {
         case TokenType.GTEQ:
           return new BoolValue(leftVal.asBool() >= rightVal.asBool());
         case TokenType.BARBAR:
+        case TokenType.OR:
           return leftVal.asBool() ? leftVal : rightVal;
         case TokenType.AMPAMP:
+        case TokenType.AND:
           return new BoolValue(leftVal.asBool() && rightVal.asBool());
       }
     }

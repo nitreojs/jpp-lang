@@ -5,9 +5,9 @@ import { NumberValue, Value } from './values';
 
 export class Variables {
   public static variables: Variable[] = [
-    new Variable({ constant: true, name: 'PI', value: new NumberValue(Math.PI) }),
-    new Variable({ constant: true, name: 'E', value: new NumberValue(Math.E) }),
-    new Variable({ constant: true, name: 'JPP', value: new NumberValue(69) })
+    new Variable({ internal: true, name: 'PI', value: new NumberValue(Math.PI) }),
+    new Variable({ internal: true, name: 'E', value: new NumberValue(Math.E) }),
+    new Variable({ internal: true, name: 'JPP', value: new NumberValue(69) })
   ];
 
   public static exists(name: string): boolean {
