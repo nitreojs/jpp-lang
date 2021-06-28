@@ -10,6 +10,7 @@ export enum TokenType {
   NULL = 'null',
   IF = 'if',
   ELSE = 'else',
+  OBJECT = 'object',
 
   PLUS = 'plus',
   MINUS = 'minus',

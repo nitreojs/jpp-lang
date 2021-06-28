@@ -1,7 +1,8 @@
 import { Token } from '../lexer/token';
 import { TokenType } from '../types';
+import { StringValue, Value } from '../variables';
 
-import { BinaryExpression, Expression, BoolExpression, ParenthesisExpression, StringExpression, UnaryExpression, VariableExpression, NumberExpression, NullExpression, PercentExpression, ConditionalExpression, BlockExpression, IfExpression, AssignmentExpression } from './expressions';
+import { ObjectExpression, BinaryExpression, Expression, BoolExpression, ParenthesisExpression, StringExpression, UnaryExpression, VariableExpression, NumberExpression, NullExpression, PercentExpression, ConditionalExpression, BlockExpression, IfExpression, AssignmentExpression, ArrayExpression } from './expressions';
 
 export class Parser {
   private static EOF = new Token({ type: TokenType.EOF });
@@ -30,6 +31,14 @@ export class Parser {
       return this.block();
     }
 
+    if (this.lookMatch(TokenType.LBRACKET)) {
+      return this.array();
+    }
+
+    if (this.lookMatch(TokenType.OBJECT)) {
+      return this.object();
+    }
+
     if (this.match(TokenType.IF)) {
       return this.ifElse()!;
     }
@@ -51,6 +60,77 @@ export class Parser {
     }
 
     return block;
+  }
+
+  private array(): Expression {
+    const array: ArrayExpression = new ArrayExpression();
+
+    this.consume(TokenType.LBRACKET);
+
+    while (!this.match(TokenType.RBRACKET)) {
+      if (this.lookMatch(TokenType.COMMA)) {
+        throw new Error('expected block or expression, got comma');
+      }
+
+      const innerExpression = this.blockOrExpression();
+
+      if (innerExpression) {
+        array.add(innerExpression.eval());
+      }
+
+      this.match(TokenType.COMMA);
+    }
+
+    return array;
+  }
+
+  private object(): Expression {
+    const object: ObjectExpression = new ObjectExpression();
+
+    this.consume(TokenType.OBJECT);
+    this.consume(TokenType.LBRACE);
+
+    while (!this.match(TokenType.RBRACE)) {
+      let key: Value | undefined;
+
+      if (this.match(TokenType.LBRACKET)) {
+        const expression = this.blockOrExpression();
+
+        if (!(expression instanceof VariableExpression)) {
+          throw new Error('expected key to be variable reference');
+        }
+
+        key = new StringValue(expression.name);
+
+        this.consume(TokenType.RBRACKET);
+      } else {
+        const expression = this.blockOrExpression();
+
+        if (expression instanceof VariableExpression) {
+          key = new StringValue(expression.name);
+        } else if (!(expression instanceof StringExpression)) {
+          throw new Error('expected key to be string or variable reference');
+        } else {
+          key = expression.eval();
+        }
+      }
+      
+      if (this.lookMatch(TokenType.COLON)) {
+        this.consume(TokenType.COLON);
+      } else if (this.lookMatch(TokenType.EQ)) {
+        this.consume(TokenType.EQ);
+      } /* else {
+        throw new Error(`expected token 'colon' or 'eq', got '${this.get(0).type}'`);
+      } */
+
+      const value: Value = this.blockOrExpression().eval();
+
+      object.add([key, value]);
+
+      this.match(TokenType.COMMA);
+    }
+
+    return object;
   }
 
   private assignmentExpression(): Expression | null {

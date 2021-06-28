@@ -9,8 +9,9 @@ export const TOKENS: Partial<Record<TokenType, string>> = {
   [TokenType.RPAREN]: ')',
   [TokenType.LET]: 'let',
   [TokenType.CONST]: 'const',
-  [TokenType.IF]: 'const',
-  [TokenType.ELSE]: 'const',
+  [TokenType.IF]: 'if',
+  [TokenType.ELSE]: 'else',
+  [TokenType.OBJECT]: 'object',
   [TokenType.COLON]: ':',
   [TokenType.SEMICOLON]: ';',
   [TokenType.COMMA]: ',',
@@ -46,7 +47,8 @@ export const IDENTIFIERS: [string, TokenType][] = [
   ['if', TokenType.IF],
   ['else', TokenType.ELSE],
   ['or', TokenType.OR],
-  ['and', TokenType.AND]
+  ['and', TokenType.AND],
+  ['object', TokenType.OBJECT]
 ];
 
 export const OPERATORS: Map<string, TokenType> = new Map([
