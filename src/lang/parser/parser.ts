@@ -2,7 +2,7 @@ import { Token } from '../lexer/token';
 import { TokenType } from '../types';
 import { StringValue, Value } from '../variables';
 
-import { ObjectExpression, BinaryExpression, Expression, BoolExpression, ParenthesisExpression, StringExpression, UnaryExpression, VariableExpression, NumberExpression, NullExpression, PercentExpression, ConditionalExpression, BlockExpression, IfExpression, AssignmentExpression, ArrayExpression } from './expressions';
+import { ObjectExpression, BinaryExpression, Expression, BoolExpression, ParenthesisExpression, StringExpression, UnaryExpression, VariableExpression, NumberExpression, NullExpression, PercentExpression, ConditionalExpression, BlockExpression, IfExpression, AssignmentExpression, ArrayExpression, TypeExpression } from './expressions';
 
 export class Parser {
   private static EOF = new Token({ type: TokenType.EOF });
@@ -41,6 +41,10 @@ export class Parser {
 
     if (this.match(TokenType.IF)) {
       return this.ifElse()!;
+    }
+
+    if (this.match(TokenType.TYPE)) {
+      return new TypeExpression(this.blockOrExpression());
     }
 
     return this.assignmentExpression()!;

@@ -4,7 +4,7 @@ import { Value } from './value';
 
 export class ObjectValue extends Value {
   constructor(public entries: [Value, Value][]) {
-    super();
+    super('object');
   }
 
   public asNumber(): number {

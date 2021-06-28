@@ -40,7 +40,7 @@ export const isHex = (source: char) => isNumber(source) || 'abcdef'.includes(sou
 export const isBinary = (source: char) => '01'.includes(source);
 export const isOctal = (source: char) => '01234567'.includes(source);
 export const isIdentifierStart = (source: char) => /[A-Za-zА-Яа-я_$]/i.test(source);
-export const isIdentifierSymbol = (source: char) => /[A-Za-zА-Яа-я_$0-9]/i.test(source);
+export const isIdentifierSymbol = (source: char) => /[A-Za-zА-Яа-я_$\d]/i.test(source);
 export const isInteger = (source: number) => (source ^ 0) === source;
 export const isNewIdentifier = (source: string) => IDENTIFIERS.find(([name]) => source === name) !== undefined;
 export const getNewIdentifier = (source: string) => IDENTIFIERS.find(([name]) => source === name)![1];

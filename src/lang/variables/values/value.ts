@@ -1,4 +1,6 @@
 export class Value {
+  constructor(public type: string) { }
+
   public asNumber(): number {
     throw new Error('not implemented');
   }

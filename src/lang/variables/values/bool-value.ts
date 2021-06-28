@@ -4,7 +4,7 @@ import { Value } from './value';
 
 export class BoolValue extends Value {
   constructor(public value: boolean) {
-    super();
+    super('bool');
   }
 
   public asNumber(): number {

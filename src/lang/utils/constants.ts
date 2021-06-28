@@ -9,6 +9,7 @@ export const TOKENS: Partial<Record<TokenType, string>> = {
   [TokenType.RPAREN]: ')',
   [TokenType.LET]: 'let',
   [TokenType.CONST]: 'const',
+  [TokenType.TYPE]: 'type',
   [TokenType.IF]: 'if',
   [TokenType.ELSE]: 'else',
   [TokenType.OBJECT]: 'object',

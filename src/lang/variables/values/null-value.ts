@@ -4,7 +4,7 @@ import { Value } from './value';
 
 export class NullValue extends Value {
   constructor() {
-    super();
+    super('null');
   }
 
   public asNumber(): number {
