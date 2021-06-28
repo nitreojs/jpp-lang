@@ -1,0 +1,52 @@
+##### LITERALS #####
+
+# this is a comment
+
+'this is a string';
+"this is a string too"; # single-quoted are better btw
+
+69;    # this is a number i guess
+6.9; 0.69; .69; 69.;
+0x123; # hex number
+0o123; # octal number
+0b101; # binary number
+69%;   # this is a number too, it equals to 0.69
+0.69%; # wtf
+
+true; false; # these are the booleans
+yes; no;     # ... who did that
+
+null; # null
+
+##### VARIABLE DECLARATION #####
+
+# you can use let or const literals to declare mutable and immutable variables:
+let mutable = 1337;
+const immutable = yes;
+
+# immutable variables should be defined when declared
+const error; # yes, error
+
+# mutable variables howsoever can be not defined when declared
+let ok;
+let ok = null;
+
+##### LANGUAGE I GUESS #####
+
+# semicolons are not required actually
+# this code will run properly:
+"foo" 'bar' true 1 0b100011 let a const b = no
+
+##### ALL STATEMENTS ARE NOT STATEMENTS #####
+
+# yes, they are expressions and they do return a value
+# so you can do stuff like this
+let depends_on_condition = if condition true else if another_condition true else false
+# seems pretty cool
+
+# also some funny moments:
+# 1. if takes block or expression, so you can do this:
+const meow = if { condition } ( true ) else ( false )
+# ..... what have i done
+
+# 2. this is the end
