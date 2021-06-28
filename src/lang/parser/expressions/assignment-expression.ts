@@ -1,11 +1,12 @@
 import { inspectable } from 'inspectable';
 
-import { Statement } from './statement';
+import { Expression } from './expression';
+import { NullExpression } from './null-expression';
 
-import { Expression, NullExpression } from '../expressions';
-import { NullValue, Variable, Variables } from '../../variables';
+import { NullValue, Value } from '../../variables/values';
+import { Variable, Variables } from '../../variables';
 
-export class AssignmentStatement extends Statement {
+export class AssignmentExpression extends Expression {
   constructor(
     public isConstant: boolean,
     public variable: string,
@@ -14,7 +15,7 @@ export class AssignmentStatement extends Statement {
     super();
   }
 
-  public execute(): void {
+  public eval(): Value {
     const value = this.expression.eval();
 
     if (this.isConstant && value instanceof NullValue) {
@@ -32,6 +33,8 @@ export class AssignmentStatement extends Statement {
         value
       })
     );
+
+    return value;
   }
 
   public toString(): string {
@@ -39,13 +42,8 @@ export class AssignmentStatement extends Statement {
   }
 }
 
-inspectable(AssignmentStatement, {
-  stringify(statement: AssignmentStatement, payload, context) {
-    return `${context.stylize(statement.constructor.name, 'special')}(${context.stylize(statement.toString(), 'string')})`;
-  },
-
-  serialize(statement: AssignmentStatement) {
-    return { expression: statement.expression };
+inspectable(AssignmentExpression, {
+  stringify(expression: AssignmentExpression, payload, context) {
+    return `${context.stylize(expression.constructor.name, 'special')}(${expression.toString()})`;
   }
 });
-

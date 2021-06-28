@@ -9,3 +9,6 @@ export * from './bool-expression';
 export * from './null-expression';
 export * from './percent-expression';
 export * from './conditional-expression';
+export * from './assignment-expression';
+export * from './block-expression';
+export * from './if-expression';

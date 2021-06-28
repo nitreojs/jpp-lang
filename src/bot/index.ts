@@ -6,10 +6,9 @@ import { inspect } from 'util';
 
 import * as config from './config';
 import * as JPP from '../lang';
-import * as SN from '../notation';
 
 const allowedGroups: string[] = [
-  'tokens', 'statements'
+  'tokens', 'expressions'
 ];
 
 const vk = new VK({ token: config.TOKEN });
@@ -93,7 +92,7 @@ hearManager.hear(/^\.\/(?<command>parse|token?ize)(?<execute>\s+(--|—)execute)
         return originalStdoutWrite(chunk, encoding, callback);
       };
 
-      block.execute();
+      block.eval();
     }
 
     output = output.trim()
@@ -110,9 +109,9 @@ hearManager.hear(/^\.\/(?<command>parse|token?ize)(?<execute>\s+(--|—)execute)
       ${tokens.map(token => token.toString()).join('\n')}
     `;
 
-    const resultIfStatements = stripIndents`
-      [Statements]
-      ${block.statements.map(statement => inspect(statement)).join('\n')}
+    const resultIfExpressions = stripIndents`
+      [Expressions]
+      ${block.expressions.map(expression => inspect(expression)).join('\n')}
     `;
 
     const result = stripIndents`
@@ -123,7 +122,7 @@ hearManager.hear(/^\.\/(?<command>parse|token?ize)(?<execute>\s+(--|—)execute)
 
       ${context.session.tokens && tokens.length !== 0 ? resultIfTokens : ''}
 
-      ${context.session.statements && block.statements.length !== 0 ? resultIfStatements : ''}
+      ${context.session.expressions && block.expressions.length !== 0 ? resultIfExpressions : ''}
     `;
 
     return context.reply(result);

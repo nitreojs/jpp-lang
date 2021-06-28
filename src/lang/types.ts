@@ -38,8 +38,10 @@ export enum TokenType {
   GTEQ = 'greaterthanequal',
   BAR = 'bar',
   BARBAR = 'barbar',
+  AND = 'and',
   AMP = 'amp',
   AMPAMP = 'ampamp',
+  OR = 'or',
 
   TRUE = 'true',
   FALSE = 'false',

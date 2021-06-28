@@ -1,8 +1,7 @@
 import { Token } from '../lexer/token';
 import { TokenType } from '../types';
 
-import { BinaryExpression, Expression, BoolExpression, ParenthesisExpression, StringExpression, UnaryExpression, VariableExpression, NumberExpression, NullExpression, PercentExpression, ConditionalExpression } from './expressions';
-import { BlockStatement, AssignmentStatement, IfStatement, PrintStatement, Statement } from './statements';
+import { BinaryExpression, Expression, BoolExpression, ParenthesisExpression, StringExpression, UnaryExpression, VariableExpression, NumberExpression, NullExpression, PercentExpression, ConditionalExpression, BlockExpression, IfExpression, AssignmentExpression } from './expressions';
 
 export class Parser {
   private static EOF = new Token({ type: TokenType.EOF });
@@ -11,14 +10,14 @@ export class Parser {
 
   constructor(private tokens: Token[]) { }
 
-  public parse(): BlockStatement {
-    const statement: BlockStatement = new BlockStatement();
+  public parse(): BlockExpression {
+    const statement: BlockExpression = new BlockExpression();
 
     while (!this.match(TokenType.EOF)) {
-      const innerStatement = this.blockOrStatement();
+      const innerExpression = this.blockOrExpression();
 
-      if (innerStatement) {
-        statement.add(innerStatement);
+      if (innerExpression) {
+        statement.add(innerExpression);
       }
     }
 
@@ -26,43 +25,35 @@ export class Parser {
   }
 
   
-  private blockOrStatement(): Statement {
+  private blockOrExpression(): Expression {
     if (this.lookMatch(TokenType.LBRACE)) {
       return this.block();
     }
 
-    return this.statement()!;
+    if (this.match(TokenType.IF)) {
+      return this.ifElse()!;
+    }
+
+    return this.assignmentExpression()!;
   }
 
-  private block(): Statement {
-    const block: BlockStatement = new BlockStatement();
+  private block(): Expression {
+    const block: BlockExpression = new BlockExpression();
 
     this.consume(TokenType.LBRACE);
 
     while (!this.match(TokenType.RBRACE)) {
-      const innerStatement = this.blockOrStatement();
+      const innerExpression = this.blockOrExpression();
 
-      if (innerStatement) {
-        block.add(innerStatement);
+      if (innerExpression) {
+        block.add(innerExpression);
       }
     }
 
     return block;
   }
 
-  private statement(): Statement | null {
-    if (this.match(TokenType.PRINT)) {
-      return new PrintStatement(this.expression());
-    }
-
-    if (this.match(TokenType.IF)) {
-      return this.ifElse();
-    }
-
-    return this.assignmentStatement();
-  }
-
-  private assignmentStatement(): Statement | null {
+  private assignmentExpression(): Expression | null {
     const current: Token = this.get();
 
     // let/const identifier [colon identifier] = expression
@@ -83,35 +74,34 @@ export class Parser {
       this.match(TokenType.SEMICOLON);
 
       if (this.match(TokenType.EQ)) {
-        const expression: Expression = this.expression();
+        const expression: Expression = this.blockOrExpression();
 
         this.match(TokenType.SEMICOLON);
 
-        return new AssignmentStatement(isConstant, name, expression);
+        return new AssignmentExpression(isConstant, name, expression);
       }
 
-      return new AssignmentStatement(isConstant, name);
+      return new AssignmentExpression(isConstant, name);
     }
 
     if (this.match(TokenType.SEMICOLON)) {
       return null;
     }
 
-    this.expression();
-
-    return null;
+    return this.expression();
   }
 
-  private ifElse(): Statement | null {
+  private ifElse(): Expression | null {
     const condition: Expression = this.expression();
-    const ifStatement: Statement = this.blockOrStatement()!;
-    let elseStatement: Statement | undefined;
+
+    const ifExpression: Expression = this.blockOrExpression()!;
+    let elseExpression: Expression | undefined;
 
     if (this.match(TokenType.ELSE)) {
-      elseStatement = this.blockOrStatement()!;
+      elseExpression = this.blockOrExpression()!;
     }
 
-    return new IfStatement(condition, ifStatement, elseStatement);
+    return new IfExpression(condition, ifExpression, elseExpression);
   }
 
   private expression(): Expression {

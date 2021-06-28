@@ -19,6 +19,6 @@ export class BoolExpression extends Expression {
 
 inspectable(BoolExpression, {
   stringify(expression: BoolExpression, payload, context) {
-    return `${context.stylize(expression.constructor.name, 'special')}(${expression.eval()}) ${context.inspect(payload)}`;
+    return `${context.stylize(expression.constructor.name, 'special')}(${expression.eval()})`;
   }
 });
