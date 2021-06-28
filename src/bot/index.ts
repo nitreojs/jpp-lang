@@ -66,11 +66,38 @@ hearManager.hear(/^\.\/settings$/i, (context) => {
   );
 });
 
-hearManager.hear(/^\.\/(?<command>parse|token?ize)(?<execute>\s+(--|—)execute)?(?:\s+(?<code>.+)|$)/is, async (context) => {
-  const { code, command, execute } = context.$match.groups!;
+hearManager.hear(/^\.\/tokenize(?:\s+(?<code>.+)|$)/is, async (context) => {
+  const { code } = context.$match.groups!;
 
   if (!code) {
-    return context.reply(`Nothing to ${command}`);
+    return context.reply('Nothing to tokenize');
+  }
+
+  try {
+    const lexer = new JPP.Lexer(code);
+    const tokens = lexer.tokenize();
+
+    const result = stripIndents`
+      [Source]
+      ${code.trim()}
+
+      [Tokens]
+      ${tokens.map(token => token.toString()).join('\n')}
+    `;
+
+    return context.reply(result);
+  } catch (error) {
+    console.log(error);
+
+    return context.reply(`Unexpected ${error.name}: ${error.message}`);
+  }
+});
+
+hearManager.hear(/^\.\/execute(?:\s+(?<code>.+)|$)/is, async (context) => {
+  const { code } = context.$match.groups!;
+
+  if (!code) {
+    return context.reply('Nothing to execute');
   }
 
   try {
@@ -81,29 +108,51 @@ hearManager.hear(/^\.\/(?<command>parse|token?ize)(?<execute>\s+(--|—)execute)
 
     let output: string = '';
 
-    if (execute) {
-      const originalStdoutWrite = process.stdout.write.bind(process.stdout);
+    const originalStdoutWrite = process.stdout.write.bind(process.stdout);
 
-      // @ts-ignore
-      process.stdout.write = (chunk, encoding, callback) => {
-        if (typeof chunk === 'string') {
-          output += chunk;
-        }
+    // @ts-ignore
+    process.stdout.write = (chunk, encoding, callback) => {
+      if (typeof chunk === 'string') {
+        output += chunk;
+      }
 
-        return originalStdoutWrite(chunk, encoding, callback);
-      };
+      return originalStdoutWrite(chunk, encoding, callback);
+    };
 
-      block.eval();
-    }
+    block.eval();
 
     output = output.trim()
       .replace(/\u001b\[[0-9;]+m/g, '')
       .replace(/\033\[[0-9;]*m/g, '');
 
-    const resultIfOutput = stripIndents`
-      [Output]
-      ${output}
+    const result = stripIndents`
+      [Source]
+      ${code.trim()}
+
+      [Expressions]
+      ${block.expressions.map(expression => inspect(expression)).join('\n') ?? 'Not found'}
     `;
+
+    return context.reply(result);
+  } catch (error) {
+    console.log(error);
+
+    return context.reply(`Unexpected ${error.name}: ${error.message}`);
+  }
+});
+
+hearManager.hear(/^\.\/parse(?:\s+(?<code>.+)|$)/is, async (context) => {
+  const { code } = context.$match.groups!;
+
+  if (!code) {
+    return context.reply('Nothing to parse');
+  }
+
+  try {
+    const lexer = new JPP.Lexer(code);
+    const tokens = lexer.tokenize();
+    const parser = new JPP.Parser(tokens);
+    const block = parser.parse();
 
     const resultIfTokens = stripIndents`
       [Tokens]
@@ -118,8 +167,6 @@ hearManager.hear(/^\.\/(?<command>parse|token?ize)(?<execute>\s+(--|—)execute)
     const result = stripIndents`
       [Source]
       ${code.trim()}
-
-      ${output ? resultIfOutput : ''}
 
       ${context.session.tokens && tokens.length !== 0 ? resultIfTokens : ''}
 
