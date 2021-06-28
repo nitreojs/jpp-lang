@@ -20,7 +20,7 @@ export class NumberValue extends Value {
   }
 
   public toString(): string {
-    return this.asNumber().toString();
+    return this.asString();
   }
 }
 

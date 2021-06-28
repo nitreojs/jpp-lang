@@ -35,7 +35,9 @@ inspectable(IfStatement, {
 
   serialize(statement: IfStatement) {
     return {
-      condition: statement.condition
+      condition: statement.condition,
+      ifStatement: statement.ifStatement,
+      elseStatement: statement.elseStatement
     };
   }
 });

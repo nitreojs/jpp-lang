@@ -6,6 +6,7 @@ import { inspect } from 'util';
 
 import * as config from './config';
 import * as JPP from '../lang';
+import * as SN from '../notation';
 
 const allowedGroups: string[] = [
   'tokens', 'statements'
@@ -76,7 +77,7 @@ hearManager.hear(/^\.\/(?<command>parse|token?ize)(?<execute>\s+(--|—)execute)
     const lexer = new JPP.Lexer(code);
     const tokens = lexer.tokenize();
     const parser = new JPP.Parser(tokens);
-    const statements = parser.parse();
+    const block = parser.parse();
 
     let output: string = '';
 
@@ -92,7 +93,7 @@ hearManager.hear(/^\.\/(?<command>parse|token?ize)(?<execute>\s+(--|—)execute)
         return originalStdoutWrite(chunk, encoding, callback);
       };
 
-      statements.forEach(statement => statement.execute());
+      block.execute();
     }
 
     output = output.trim()
@@ -111,7 +112,7 @@ hearManager.hear(/^\.\/(?<command>parse|token?ize)(?<execute>\s+(--|—)execute)
 
     const resultIfStatements = stripIndents`
       [Statements]
-      ${statements.map(statement => inspect(statement)).join('\n')}
+      ${block.statements.map(statement => inspect(statement)).join('\n')}
     `;
 
     const result = stripIndents`
@@ -122,7 +123,7 @@ hearManager.hear(/^\.\/(?<command>parse|token?ize)(?<execute>\s+(--|—)execute)
 
       ${context.session.tokens && tokens.length !== 0 ? resultIfTokens : ''}
 
-      ${context.session.statements && statements.length !== 0 ? resultIfStatements : ''}
+      ${context.session.statements && block.statements.length !== 0 ? resultIfStatements : ''}
     `;
 
     return context.reply(result);

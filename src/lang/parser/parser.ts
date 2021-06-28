@@ -2,7 +2,7 @@ import { Token } from '../lexer/token';
 import { TokenType } from '../types';
 
 import { BinaryExpression, Expression, BoolExpression, ParenthesisExpression, StringExpression, UnaryExpression, VariableExpression, NumberExpression, NullExpression, PercentExpression, ConditionalExpression } from './expressions';
-import { AssignmentStatement, IfStatement, PrintStatement, Statement } from './statements';
+import { BlockStatement, AssignmentStatement, IfStatement, PrintStatement, Statement } from './statements';
 
 export class Parser {
   private static EOF = new Token({ type: TokenType.EOF });
@@ -11,20 +11,44 @@ export class Parser {
 
   constructor(private tokens: Token[]) { }
 
-  public parse(): Statement[] {
-    const statements: Statement[] = [];
+  public parse(): BlockStatement {
+    const statement: BlockStatement = new BlockStatement();
 
     while (!this.match(TokenType.EOF)) {
-      const statement = this.statement();
+      const innerStatement = this.blockOrStatement();
 
-      if (statement) {
-        statements.push(statement);
+      if (innerStatement) {
+        statement.add(innerStatement);
       }
     }
 
-    return statements;
+    return statement;
   }
 
+  
+  private blockOrStatement(): Statement {
+    if (this.lookMatch(TokenType.LBRACE)) {
+      return this.block();
+    }
+
+    return this.statement()!;
+  }
+
+  private block(): Statement {
+    const block: BlockStatement = new BlockStatement();
+
+    this.consume(TokenType.LBRACE);
+
+    while (!this.match(TokenType.RBRACE)) {
+      const innerStatement = this.blockOrStatement();
+
+      if (innerStatement) {
+        block.add(innerStatement);
+      }
+    }
+
+    return block;
+  }
 
   private statement(): Statement | null {
     if (this.match(TokenType.PRINT)) {
@@ -80,11 +104,11 @@ export class Parser {
 
   private ifElse(): Statement | null {
     const condition: Expression = this.expression();
-    const ifStatement: Statement = this.statement()!;
+    const ifStatement: Statement = this.blockOrStatement()!;
     let elseStatement: Statement | undefined;
 
     if (this.match(TokenType.ELSE)) {
-      elseStatement = this.statement()!;
+      elseStatement = this.blockOrStatement()!;
     }
 
     return new IfStatement(condition, ifStatement, elseStatement);
