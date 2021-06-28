@@ -5,6 +5,7 @@ import { NullExpression } from './null-expression';
 
 import { NullValue, Value } from '../../variables/values';
 import { Variable, Variables } from '../../variables';
+import { AssignmentError } from '../../errors';
 
 export class AssignmentExpression extends Expression {
   constructor(
@@ -23,7 +24,7 @@ export class AssignmentExpression extends Expression {
     }
 
     if (Variables.exists(this.variable)) {
-      throw new Error(`variable '${this.variable}' already exists`);
+      throw new AssignmentError(`variable '${this.variable}' already exists`);
     }
 
     Variables.add(

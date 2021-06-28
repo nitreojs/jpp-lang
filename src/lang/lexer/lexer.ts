@@ -170,11 +170,11 @@ export class Lexer {
 
     while (current !== quote) {
       if (current === '\0') {
-        throw new Error('unexpected end');
+        throw new SyntaxError('unexpected end');
       }
 
       if (current === '\n') {
-        throw new Error('expected token \'quote\', got \'eol\'');
+        throw new SyntaxError('expected token \'quote\', got \'eol\'');
       }
 
       if (current === '\\') {

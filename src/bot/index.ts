@@ -6,7 +6,7 @@ import { inspect } from 'util';
 
 import * as config from './config';
 import * as JPP from '../lang';
-import { Variable } from '../lang';
+import { AssignmentExpression, Variable } from '../lang';
 
 const allowedGroups: string[] = [
   'tokens', 'expressions'
@@ -130,7 +130,11 @@ hearManager.hear(/^\.\/execute(?:\s+(?<code>.+)|$)/is, async (context) => {
       ${code.trim()}
 
       [Expressions]
-      ${block.expressions.map(expression => inspect(expression)).join('\n') ?? 'Not found'}
+      ${block.expressions.map(
+        expression => expression instanceof AssignmentExpression
+          ? inspect(expression)
+          : `${inspect(expression)} = ${expression.eval()}`
+      ).join('\n') ?? 'Not found'}
     `;
 
     return context.reply(result);

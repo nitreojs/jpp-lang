@@ -42,9 +42,9 @@ export class ConditionalExpression extends Expression {
     if (leftVal instanceof StringValue) {
       switch (this.operator) {
         case TokenType.EQEQ:
-          return new BoolValue(leftVal.asString() === rightVal.asString());
+          return new BoolValue(rightVal instanceof StringValue && leftVal.asString() === rightVal.asString());
         case TokenType.EXCLEQ:
-          return new BoolValue(leftVal.asString() !== rightVal.asString());
+          return new BoolValue(!(rightVal instanceof StringValue) || leftVal.asString() !== rightVal.asString());
         case TokenType.LT:
         case TokenType.LTEQ:
         case TokenType.GT:
@@ -62,9 +62,9 @@ export class ConditionalExpression extends Expression {
     if (leftVal instanceof NumberValue) {
       switch (this.operator) {
         case TokenType.EQEQ:
-          return new BoolValue(leftVal.asNumber() === rightVal.asNumber());
+          return new BoolValue(rightVal instanceof NumberValue && leftVal.asNumber() === rightVal.asNumber());
         case TokenType.EXCLEQ:
-          return new BoolValue(leftVal.asNumber() !== rightVal.asNumber());
+          return new BoolValue(!(rightVal instanceof NumberValue) || leftVal.asNumber() !== rightVal.asNumber());
         case TokenType.LT:
           return new BoolValue(leftVal.asNumber() < rightVal.asNumber());
         case TokenType.LTEQ:
@@ -85,9 +85,9 @@ export class ConditionalExpression extends Expression {
     if (leftVal instanceof BoolValue) {
       switch (this.operator) {
         case TokenType.EQEQ:
-          return new BoolValue(leftVal.asBool() === rightVal.asBool());
+          return new BoolValue(rightVal instanceof BoolValue && leftVal.asBool() === rightVal.asBool());
         case TokenType.EXCLEQ:
-          return new BoolValue(leftVal.asBool() !== rightVal.asBool());
+          return new BoolValue(!(rightVal instanceof BoolValue) || leftVal.asBool() !== rightVal.asBool());
         case TokenType.LT:
           return new BoolValue(leftVal.asBool() < rightVal.asBool());
         case TokenType.LTEQ:
@@ -115,14 +115,6 @@ export class ConditionalExpression extends Expression {
 
 inspectable(ConditionalExpression, {
   stringify(expression: ConditionalExpression, payload, context) {
-    return `${context.stylize(expression.constructor.name, 'special')}(${expression.toString()}) ${context.inspect(payload)}`;
-  },
-
-  serialize(expression: ConditionalExpression) {
-    return {
-      left: expression.left,
-      operator: expression.operator,
-      right: expression.right
-    };
+    return `${context.stylize(expression.constructor.name, 'special')}(${expression.toString()})`;
   }
 });

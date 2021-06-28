@@ -11,6 +11,7 @@ export enum TokenType {
   IF = 'if',
   ELSE = 'else',
   OBJECT = 'object',
+  DELETE = 'delete',
 
   PLUS = 'plus',
   MINUS = 'minus',
@@ -33,6 +34,8 @@ export enum TokenType {
   EQ = 'eq',
   EXCLEQ = 'excleq',
   EQEQ = 'eqeq',
+  PLUSEQ = 'pluseq',
+  MINUSEQ = 'minuseq',
   LT = 'lessthan',
   LTEQ = 'lessthanequal',
   GT = 'greaterthan',

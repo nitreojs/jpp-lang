@@ -1,6 +1,7 @@
 import { inspectable } from 'inspectable';
 
 import { Value } from './value';
+import { InternalError } from '../../errors';
 
 export class StringValue extends Value {
   constructor(public value: string) {
@@ -11,7 +12,7 @@ export class StringValue extends Value {
     const number = Number.parseInt(this.value);
 
     if (Number.isNaN(number)) {
-      throw new Error('cannot convert string to number');
+      throw new InternalError('cannot convert string to number');
     }
 
     return number;

@@ -8,7 +8,7 @@ export class ArrayValue extends Value {
   }
 
   public asNumber(): number {
-    throw new Error('cannot convert array to number');
+    return this.values.length;
   }
 
   public asString(): string {
@@ -16,7 +16,7 @@ export class ArrayValue extends Value {
   }
 
   public asBool(): boolean {
-    throw new Error('cannot convert array to bool');
+    return this.asNumber() > 0;
   }
 
   public toString(): string {

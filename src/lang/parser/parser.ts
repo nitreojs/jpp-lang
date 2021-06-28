@@ -2,7 +2,7 @@ import { Token } from '../lexer/token';
 import { TokenType } from '../types';
 import { StringValue, Value } from '../variables';
 
-import { ObjectExpression, BinaryExpression, Expression, BoolExpression, ParenthesisExpression, StringExpression, UnaryExpression, VariableExpression, NumberExpression, NullExpression, PercentExpression, ConditionalExpression, BlockExpression, IfExpression, AssignmentExpression, ArrayExpression, TypeExpression } from './expressions';
+import { ObjectExpression, BinaryExpression, Expression, BoolExpression, ParenthesisExpression, StringExpression, UnaryExpression, VariableExpression, NumberExpression, NullExpression, PercentExpression, ConditionalExpression, BlockExpression, IfExpression, AssignmentExpression, ArrayExpression, TypeExpression, DeleteExpression } from './expressions';
 
 export class Parser {
   private static EOF = new Token({ type: TokenType.EOF });
@@ -15,7 +15,7 @@ export class Parser {
     const statement: BlockExpression = new BlockExpression();
 
     while (!this.match(TokenType.EOF)) {
-      const innerExpression = this.blockOrExpression();
+      const innerExpression = this.logicalOr();
 
       if (innerExpression) {
         statement.add(innerExpression);
@@ -26,17 +26,79 @@ export class Parser {
   }
 
   
+
+  private logicalOr(): Expression {
+    let expression: Expression = this.logicalAnd();
+
+    const logicalOrOperators: TokenType[] = [
+      TokenType.BARBAR,
+      TokenType.OR
+    ];
+
+    while (true) {
+      for (const operator of logicalOrOperators) {
+        if (this.match(operator)) {
+          expression = new ConditionalExpression(expression, operator, this.logicalAnd());
+
+          continue;
+        }
+      }
+
+      break;
+    }
+
+    return expression;
+  }
+
+  private logicalAnd(): Expression {
+    let expression: Expression = this.equality();
+
+    const logicalAndOperators: TokenType[] = [
+      TokenType.AMPAMP,
+      TokenType.AND
+    ];
+
+    while (true) {
+      for (const operator of logicalAndOperators) {
+        if (this.match(operator)) {
+          expression = new ConditionalExpression(expression, operator, this.equality());
+
+          continue;
+        }
+      }
+
+      break;
+    }
+
+    return expression;
+  }
+
+  private equality(): Expression {
+    let expression: Expression = this.blockOrExpression();
+
+    const equalityOperators: TokenType[] = [
+      TokenType.EQEQ,
+      TokenType.EXCLEQ
+    ];
+
+    while (true) {
+      for (const operator of equalityOperators) {
+        if (this.match(operator)) {
+          expression = new ConditionalExpression(expression, operator, this.blockOrExpression());
+
+          continue;
+        }
+      }
+
+      break;
+    }
+
+    return expression;
+  }
+
   private blockOrExpression(): Expression {
     if (this.lookMatch(TokenType.LBRACE)) {
       return this.block();
-    }
-
-    if (this.lookMatch(TokenType.LBRACKET)) {
-      return this.array();
-    }
-
-    if (this.lookMatch(TokenType.OBJECT)) {
-      return this.object();
     }
 
     if (this.match(TokenType.IF)) {
@@ -45,6 +107,10 @@ export class Parser {
 
     if (this.match(TokenType.TYPE)) {
       return new TypeExpression(this.blockOrExpression());
+    }
+
+    if (this.match(TokenType.DELETE)) {
+      return new DeleteExpression(this.blockOrExpression());
     }
 
     return this.assignmentExpression()!;
@@ -73,7 +139,7 @@ export class Parser {
 
     while (!this.match(TokenType.RBRACKET)) {
       if (this.lookMatch(TokenType.COMMA)) {
-        throw new Error('expected block or expression, got comma');
+        throw new SyntaxError('expected block or expression, got comma');
       }
 
       const innerExpression = this.blockOrExpression();
@@ -101,7 +167,7 @@ export class Parser {
         const expression = this.blockOrExpression();
 
         if (!(expression instanceof VariableExpression)) {
-          throw new Error('expected key to be variable reference');
+          throw new SyntaxError('expected key to be variable reference');
         }
 
         key = new StringValue(expression.name);
@@ -113,7 +179,7 @@ export class Parser {
         if (expression instanceof VariableExpression) {
           key = new StringValue(expression.name);
         } else if (!(expression instanceof StringExpression)) {
-          throw new Error('expected key to be string or variable reference');
+          throw new SyntaxError('expected key to be string or variable reference');
         } else {
           key = expression.eval();
         }
@@ -124,7 +190,7 @@ export class Parser {
       } else if (this.lookMatch(TokenType.EQ)) {
         this.consume(TokenType.EQ);
       } /* else {
-        throw new Error(`expected token 'colon' or 'eq', got '${this.get(0).type}'`);
+        throw new SyntaxError(`expected token 'colon' or 'eq', got '${this.get(0).type}'`);
       } */
 
       const value: Value = this.blockOrExpression().eval();
@@ -154,7 +220,6 @@ export class Parser {
       const name: string = this.get().value!;
 
       this.consume(TokenType.IDENTIFIER);
-
       this.match(TokenType.SEMICOLON);
 
       if (this.match(TokenType.EQ)) {
@@ -191,67 +256,7 @@ export class Parser {
   private expression(): Expression {
     while (this.match(TokenType.SEMICOLON));
 
-    const expression: Expression = this.logicalOr();
-
-    return expression;
-  }
-
-  private logicalOr(): Expression {
-    let expression: Expression = this.logicalAnd();
-
-    const conditionalOperators: TokenType[] = [
-      TokenType.BARBAR,
-      TokenType.OR
-    ];
-
-    while (true) {
-      for (const operator of conditionalOperators) {
-        if (this.match(operator)) {
-          expression = new ConditionalExpression(expression, operator, this.logicalAnd());
-
-          continue;
-        }
-      }
-
-      break;
-    }
-
-    return expression;
-  }
-
-  private logicalAnd(): Expression {
-    let expression: Expression = this.equality();
-
-    const conditionalOperators: TokenType[] = [
-      TokenType.AMPAMP,
-      TokenType.AND
-    ];
-
-    while (true) {
-      for (const operator of conditionalOperators) {
-        if (this.match(operator)) {
-          expression = new ConditionalExpression(expression, operator, this.logicalAnd());
-
-          continue;
-        }
-      }
-
-      break;
-    }
-
-    return expression;
-  }
-
-  private equality(): Expression {
     const expression: Expression = this.conditional();
-
-    if (this.match(TokenType.EQEQ)) {
-      return new ConditionalExpression(expression, TokenType.EQEQ, this.conditional());
-    }
-
-    if (this.match(TokenType.EXCLEQ)) {
-      return new ConditionalExpression(expression, TokenType.EXCLEQ, this.conditional());
-    }
 
     return expression;
   }
@@ -406,9 +411,17 @@ export class Parser {
       return expression;
     }
 
+    if (this.lookMatch(TokenType.LBRACKET)) {
+      return this.array();
+    }
+
+    if (this.lookMatch(TokenType.OBJECT)) {
+      return this.object();
+    }
+
     this.match(TokenType.SEMICOLON);
 
-    throw new Error(`unknown expression type '${current.type}'`);
+    throw new SyntaxError(`unknown expression type '${current.type}'`);
   }
 
 
@@ -416,7 +429,7 @@ export class Parser {
     const current: Token = this.get();
 
     if (current.type !== type) {
-      throw new TypeError(`expected token '${type}', got '${current.type}'`);
+      throw new SyntaxError(`expected token '${type}', got '${current.type}'`);
     }
 
     this.position += 1;

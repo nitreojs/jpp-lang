@@ -19,10 +19,6 @@ export class ParenthesisExpression extends Expression {
 
 inspectable(ParenthesisExpression, {
   stringify(expression: ParenthesisExpression, payload, context) {
-    return `${context.stylize(expression.constructor.name, 'special')}${expression.toString()} ${context.inspect(payload)}`;
-  },
-
-  serialize(expression: ParenthesisExpression) {
-    return { expression: expression.expression };
+    return `${context.stylize(expression.constructor.name, 'special')}${expression.toString()}`;
   }
 });

@@ -35,13 +35,6 @@ export class UnaryExpression extends Expression {
 
 inspectable(UnaryExpression, {
   stringify(expression: UnaryExpression, payload, context) {
-    return `${context.stylize(expression.constructor.name, 'special')}(${expression.toString()}) ${context.inspect(payload)}`;
-  },
-
-  serialize(expression: UnaryExpression) {
-    return {
-      operator: expression.operator,
-      expression: expression.expression
-    };
+    return `${context.stylize(expression.constructor.name, 'special')}(${expression.toString()})`;
   }
 });

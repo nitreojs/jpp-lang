@@ -8,7 +8,7 @@ export class ObjectValue extends Value {
   }
 
   public asNumber(): number {
-    throw new Error('cannot convert object to number');
+    return this.entries.length;
   }
 
   public asString(): string {
@@ -16,11 +16,11 @@ export class ObjectValue extends Value {
   }
 
   public asBool(): boolean {
-    throw new Error('cannot convert object to bool');
+    return this.asNumber() > 0;
   }
 
   public toString(): string {
-    return `object {${this.entries.length !== 0 ? ` ${this.entries.map(([key, value]) => `${key} : ${value.toString()}`)} ` : ''}}`;
+    return `object {${this.entries.length !== 0 ? ` ${this.entries.map(([key, value]) => `${key} : ${value.toString()}`).join(', ')} ` : ''}}`;
   }
 }
 

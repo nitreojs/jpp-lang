@@ -13,6 +13,7 @@ export const TOKENS: Partial<Record<TokenType, string>> = {
   [TokenType.IF]: 'if',
   [TokenType.ELSE]: 'else',
   [TokenType.OBJECT]: 'object',
+  [TokenType.DELETE]: 'delete',
   [TokenType.COLON]: ':',
   [TokenType.SEMICOLON]: ';',
   [TokenType.COMMA]: ',',
@@ -23,6 +24,8 @@ export const TOKENS: Partial<Record<TokenType, string>> = {
   [TokenType.EQ]: '=',
   [TokenType.EXCLEQ]: '!=',
   [TokenType.EQEQ]: '==',
+  [TokenType.PLUSEQ]: '+=',
+  [TokenType.MINUSEQ]: '-=',
   [TokenType.LT]: '<',
   [TokenType.LTEQ]: '<=',
   [TokenType.GT]: '>',
@@ -49,7 +52,8 @@ export const IDENTIFIERS: [string, TokenType][] = [
   ['else', TokenType.ELSE],
   ['or', TokenType.OR],
   ['and', TokenType.AND],
-  ['object', TokenType.OBJECT]
+  ['object', TokenType.OBJECT],
+  ['delete', TokenType.DELETE]
 ];
 
 export const OPERATORS: Map<string, TokenType> = new Map([
@@ -76,6 +80,8 @@ export const OPERATORS: Map<string, TokenType> = new Map([
   ['=', TokenType.EQ],
   ['!=', TokenType.EXCLEQ],
   ['==', TokenType.EQEQ],
+  ['+=', TokenType.PLUSEQ],
+  ['-=', TokenType.MINUSEQ],
   ['<', TokenType.LT],
   ['<=', TokenType.LTEQ],
   ['>', TokenType.GT],

@@ -4,7 +4,7 @@ import { Expression } from './expression';
 
 import { TokenType } from '../../types';
 import { getTokenChar } from '../../utils/helpers';
-import { BoolValue, NullValue, NumberValue, StringValue, Value } from '../../variables/values';
+import { ArrayValue, BoolValue, NullValue, NumberValue, StringValue, Value } from '../../variables/values';
 import { BinaryExpressionError, ZeroDivisionError } from '../../errors';
 
 export class BinaryExpression extends Expression {
@@ -41,12 +41,12 @@ export class BinaryExpression extends Expression {
     }
 
     if (leftVal instanceof NumberValue) {
-      const left: number = leftVal.asNumber();
-      const right: number = rightVal.asNumber();
-
       if (!(rightVal instanceof NumberValue)) {
         throw new BinaryExpressionError('expected right side to be number');
       }
+
+      const left: number = leftVal.asNumber();
+      const right: number = rightVal.asNumber();
 
       if (this.operator === TokenType.PLUS) {
         return new NumberValue(left + right);
@@ -69,7 +69,33 @@ export class BinaryExpression extends Expression {
       }
     }
 
-    return new NumberValue(0);
+    if (leftVal instanceof ArrayValue) {  
+      if (this.operator === TokenType.ASTERISK) {
+        if (!(rightVal instanceof NumberValue)) {
+          throw new BinaryExpressionError('expected right side to be number');
+        }
+
+        const times: number = rightVal.asNumber();
+
+        if (times < 0) {
+          throw new BinaryExpressionError('expected right side to be number >= 0');
+        }
+
+        return new ArrayValue(Array(times).fill(leftVal.values).flat());
+      }
+
+      if (!(rightVal instanceof ArrayValue)) {
+        throw new BinaryExpressionError('expected right side to be array');
+      }
+
+      if (this.operator === TokenType.PLUS) {
+        return new ArrayValue([...leftVal.values, ...rightVal.values]);
+      }
+
+      throw new BinaryExpressionError(`unknown operator '${this.operator}' for array`);
+    }
+
+    throw new BinaryExpressionError(`unknown operator '${this.operator}' for ${leftVal.type}`);
   }
 
   public toString(): string {
@@ -79,14 +105,6 @@ export class BinaryExpression extends Expression {
 
 inspectable(BinaryExpression, {
   stringify(expression: BinaryExpression, payload, context) {
-    return `${context.stylize(expression.constructor.name, 'special')}(${expression.toString()}) ${context.inspect(payload)}`;
-  },
-
-  serialize(expression: BinaryExpression) {
-    return {
-      left: expression.left,
-      operator: expression.operator,
-      right: expression.right
-    };
+    return `${context.stylize(expression.constructor.name, 'special')}(${expression.toString()})`;
   }
 });

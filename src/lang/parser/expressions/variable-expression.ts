@@ -26,10 +26,6 @@ export class VariableExpression extends Expression {
 
 inspectable(VariableExpression, {
   stringify(expression: VariableExpression, payload, context) {
-    return `${context.stylize(expression.constructor.name, 'special')}(${expression.toString()}) ${context.inspect(payload)}`;
-  },
-
-  serialize(expression: VariableExpression) {
-    return { value: expression.eval() };
+    return `${context.stylize(expression.constructor.name, 'special')}(${expression.toString()})`;
   }
 });
