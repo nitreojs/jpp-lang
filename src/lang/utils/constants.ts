@@ -1,3 +1,4 @@
+import { ArrayType, NumberType, StringType, VoidType, ObjectType, BoolType, Type, UnknownType, NullType } from '../types/';
 import { TokenType } from '../types';
 
 export const TOKENS: Partial<Record<TokenType, string>> = {
@@ -7,12 +8,22 @@ export const TOKENS: Partial<Record<TokenType, string>> = {
   [TokenType.SLASH]: '/',
   [TokenType.LPAREN]: '(',
   [TokenType.RPAREN]: ')',
+  // [TokenType.NUMBER_T]: 'number_t',
+  [TokenType.NULL]: 'null',
+  // [TokenType.NULL_T]: 'null_t',
+  // [TokenType.ARRAY_T]: 'array_t',
+  // [TokenType.BOOL_T]: 'bool_t',
+  [TokenType.OBJECT]: 'object',
+  [TokenType.AS]: 'as',
+  // [TokenType.OBJECT_T]: 'object_t',
+  // [TokenType.STRING_T]: 'string_t',
+  // [TokenType.VOID_T]: 'void_t',
+  // [TokenType.UNKNOWN_T]: 'unknown_t',
   [TokenType.LET]: 'let',
   [TokenType.CONST]: 'const',
   [TokenType.TYPE]: 'type',
   [TokenType.IF]: 'if',
   [TokenType.ELSE]: 'else',
-  [TokenType.OBJECT]: 'object',
   [TokenType.DELETE]: 'delete',
   [TokenType.COLON]: ':',
   [TokenType.SEMICOLON]: ';',
@@ -53,7 +64,16 @@ export const IDENTIFIERS: [string, TokenType][] = [
   ['or', TokenType.OR],
   ['and', TokenType.AND],
   ['object', TokenType.OBJECT],
-  ['delete', TokenType.DELETE]
+  // ['object_t', TokenType.OBJECT_T],
+  ['delete', TokenType.DELETE],
+  ['as', TokenType.AS],
+  // ['array_t', TokenType.ARRAY_T],
+  // ['number_t', TokenType.NUMBER_T],
+  // ['string_t', TokenType.STRING_T],
+  // ['void_t', TokenType.VOID_T],
+  // ['bool_t', TokenType.BOOL_T],
+  // ['unknown_t', TokenType.UNKNOWN_T],
+  // ['null_t', TokenType.NULL_T]
 ];
 
 export const OPERATORS: Map<string, TokenType> = new Map([
@@ -92,4 +112,15 @@ export const OPERATORS: Map<string, TokenType> = new Map([
   ['&', TokenType.AMP],
   ['&&', TokenType.AMPAMP],
   ['and', TokenType.AND],
+]);
+
+export const TYPES: Map<string, Type> = new Map([
+  ['array', new ArrayType()],
+  ['bool', new BoolType()],
+  ['number', new NumberType()],
+  ['object', new ObjectType()],
+  ['string', new StringType()],
+  ['void', new VoidType()],
+  ['unknown', new UnknownType()],
+  ['null', new NullType()]
 ]);

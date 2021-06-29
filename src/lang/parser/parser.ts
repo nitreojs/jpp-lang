@@ -1,8 +1,11 @@
 import { Token } from '../lexer/token';
 import { TokenType } from '../types';
+import { Type } from '../types/type';
+import { getType } from '../utils/helpers';
 import { StringValue, Value } from '../variables';
 
-import { ObjectExpression, BinaryExpression, Expression, BoolExpression, ParenthesisExpression, StringExpression, UnaryExpression, VariableExpression, NumberExpression, NullExpression, PercentExpression, ConditionalExpression, BlockExpression, IfExpression, AssignmentExpression, ArrayExpression, TypeExpression, DeleteExpression } from './expressions';
+import { ObjectExpression, BinaryExpression, Expression, BoolExpression, ParenthesisExpression, StringExpression, UnaryExpression, VariableExpression, NumberExpression, NullExpression, PercentExpression, ConditionalExpression, BlockExpression, IfExpression, AssignmentExpression, ArrayExpression, TypeOperatorExpression, DeleteExpression } from './expressions';
+import { CastExpression } from './expressions/cast-expression';
 
 export class Parser {
   private static EOF = new Token({ type: TokenType.EOF });
@@ -103,14 +106,6 @@ export class Parser {
 
     if (this.match(TokenType.IF)) {
       return this.ifElse()!;
-    }
-
-    if (this.match(TokenType.TYPE)) {
-      return new TypeExpression(this.blockOrExpression());
-    }
-
-    if (this.match(TokenType.DELETE)) {
-      return new DeleteExpression(this.blockOrExpression());
     }
 
     return this.assignmentExpression()!;
@@ -298,7 +293,7 @@ export class Parser {
   
       if (this.match(TokenType.MINUS)) {
         expression = new BinaryExpression(expression, TokenType.MINUS, this.multiplicative());
-
+        
         continue;
       }
 
@@ -309,17 +304,35 @@ export class Parser {
   }
 
   private multiplicative(): Expression {
-    let expression: Expression = this.unary();
+    let expression: Expression = this.cast();
 
     while (true) {
       if (this.match(TokenType.ASTERISK)) {
-        expression = new BinaryExpression(expression, TokenType.ASTERISK, this.unary());
+        expression = new BinaryExpression(expression, TokenType.ASTERISK, this.cast());
 
         continue;
       }
   
       if (this.match(TokenType.SLASH)) {
-        expression = new BinaryExpression(expression, TokenType.SLASH, this.unary());
+        expression = new BinaryExpression(expression, TokenType.SLASH, this.cast());
+
+        continue;
+      }
+
+      break;
+    }
+
+    return expression;
+  }
+
+  private cast(): Expression {
+    let expression: Expression = this.unary();
+
+    while (true) {
+      console.log(expression, this.get());
+
+      if (this.match(TokenType.AS)) {
+        expression = new CastExpression(expression, this.type());
 
         continue;
       }
@@ -332,11 +345,15 @@ export class Parser {
 
   private unary(): Expression {
     if (this.match(TokenType.MINUS)) {
-      return new UnaryExpression(TokenType.MINUS, this.unary());
+      const expression = new UnaryExpression(TokenType.MINUS, this.unary());
+
+      return expression;
     }
 
     if (this.match(TokenType.PLUS)) {
-      return new UnaryExpression(TokenType.PLUS, this.unary());
+      const expression = new UnaryExpression(TokenType.PLUS, this.unary());
+
+      return expression;
     }
 
     return this.postfix();
@@ -361,6 +378,12 @@ export class Parser {
   private primary(): Expression {
     const current: Token = this.get();
 
+    console.log('primary', current);
+
+    if (this.match(TokenType.LBRACE)) {
+      return this.block();
+    }
+
     if (this.match(TokenType.NUMBER)) {
       let value: number = Number.parseFloat(current.value!);
 
@@ -380,31 +403,43 @@ export class Parser {
         value = Number.parseInt(current.value!.slice(2), 8);
       }
 
-      return new NumberExpression(value);
+      const expression = new NumberExpression(value);
+
+      return expression;
     }
 
     if (this.match(TokenType.TRUE) || this.match(TokenType.YES)) {
-      return new BoolExpression(true);
+      const expression = new BoolExpression(true);
+
+      return expression;
     }
 
     if (this.match(TokenType.FALSE) || this.match(TokenType.NO)) {
-      return new BoolExpression(false);
+      const expression = new BoolExpression(false);
+
+      return expression;
     }
 
     if (this.match(TokenType.NULL)) {
-      return new NullExpression();
+      const expression = new NullExpression();
+
+      return expression;
     }
 
     if (this.match(TokenType.IDENTIFIER)) {
-      return new VariableExpression(current.value!);
+      const expression = new VariableExpression(current.value!);
+
+      return expression;
     }
 
     if (this.match(TokenType.STRING)) {
-      return new StringExpression(current.value!);
+      const expression = new StringExpression(current.value!);
+
+      return expression;
     }
 
     if (this.match(TokenType.LPAREN)) {
-      const expression: Expression = new ParenthesisExpression(this.expression());
+      const expression: Expression = new ParenthesisExpression(this.blockOrExpression());
 
       this.match(TokenType.RPAREN);
 
@@ -419,9 +454,33 @@ export class Parser {
       return this.object();
     }
 
+    if (this.match(TokenType.TYPE)) {
+      return new TypeOperatorExpression(this.blockOrExpression());
+    }
+
+    if (this.match(TokenType.DELETE)) {
+      return new DeleteExpression(this.blockOrExpression());
+    }
+
     this.match(TokenType.SEMICOLON);
 
     throw new SyntaxError(`unknown expression type '${current.type}'`);
+  }
+
+  private type(): Type {
+    const current: Token = this.get();
+
+    if (this.match(TokenType.IDENTIFIER)) {
+      const type = getType(current.value!);
+
+      return type;
+    }
+
+    if (this.match(TokenType.NULL)) {
+      return getType('null');
+    }
+      
+    throw new SyntaxError(`expected type identifier, got '${current.type}'`);
   }
 
 

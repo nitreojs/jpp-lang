@@ -14,5 +14,6 @@ export * from './block-expression';
 export * from './if-expression';
 export * from './array-expression';
 export * from './object-expression';
-export * from './type-expression';
+export * from './type-operator-expression';
 export * from './delete-expression';
+export * from './type-expression';

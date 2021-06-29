@@ -9,7 +9,7 @@ export class StringValue extends Value {
   }
 
   public asNumber(): number {
-    const number = Number.parseInt(this.value);
+    const number = Number.parseFloat(this.value);
 
     if (Number.isNaN(number)) {
       throw new InternalError('cannot convert string to number');

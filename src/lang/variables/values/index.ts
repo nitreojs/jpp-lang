@@ -5,3 +5,4 @@ export * from './bool-value';
 export * from './null-value';
 export * from './array-value';
 export * from './object-value';
+export * from './type-value';

@@ -4,7 +4,7 @@ import { Expression } from './expression';
 
 import { TokenType } from '../../types';
 import { getTokenChar } from '../../utils/helpers';
-import { BoolValue, NullValue, NumberValue, StringValue, Value } from '../../variables/values';
+import { BoolValue, NullValue, NumberValue, StringValue, TypeValue, Value } from '../../variables/values';
 
 export class ConditionalExpression extends Expression {
   constructor(
@@ -18,6 +18,26 @@ export class ConditionalExpression extends Expression {
   public eval(): Value {
     const leftVal: Value = this.left.eval();
     const rightVal: Value = this.right.eval();
+
+    if (leftVal instanceof TypeValue) {
+      switch (this.operator) {
+        case TokenType.EQEQ:
+          return new BoolValue(rightVal instanceof TypeValue && leftVal._type === rightVal._type);
+        case TokenType.EXCLEQ:
+          return new BoolValue(!(rightVal instanceof TypeValue) || leftVal._type !== rightVal._type);
+        case TokenType.LT:
+        case TokenType.LTEQ:
+        case TokenType.GT:
+        case TokenType.GTEQ:
+          return new BoolValue(false);
+        case TokenType.BARBAR:
+        case TokenType.OR:
+          return leftVal;
+        case TokenType.AMPAMP:
+        case TokenType.AND:
+          return new BoolValue(false);
+      }
+    }
 
     if (leftVal instanceof NullValue) {
       switch (this.operator) {

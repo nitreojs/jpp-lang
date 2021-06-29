@@ -1,6 +1,6 @@
 import { TokenType } from '../types';
 
-import { IDENTIFIERS, OPERATORS, TOKENS } from './constants';
+import { IDENTIFIERS, OPERATORS, TOKENS, TYPES } from './constants';
 
 type char = string;
 
@@ -44,3 +44,4 @@ export const isIdentifierSymbol = (source: char) => /[A-Za-zА-Яа-я_$\d]/i.te
 export const isInteger = (source: number) => (source ^ 0) === source;
 export const isNewIdentifier = (source: string) => IDENTIFIERS.find(([name]) => source === name) !== undefined;
 export const getNewIdentifier = (source: string) => IDENTIFIERS.find(([name]) => source === name)![1];
+export const getType = (source: string) => TYPES.get(source) ?? TYPES.get('unknown')!;

@@ -1,16 +1,26 @@
 import { Value } from './variables/values';
 
 export enum TokenType {
-  NUMBER = 'number',
   IDENTIFIER = 'identifier',
+  NUMBER = 'number',
+  NULL = 'null',
+  OBJECT = 'object',
   STRING = 'string',
+  AS = 'as',
+
+  NUMBER_T = 'number_t',
+  STRING_T = 'string',
+  BOOL_T = 'bool_t',
+  NULL_T = 'null_t',
+  VOID_T = 'void_t',
+  OBJECT_T = 'object_t',
+  ARRAY_T = 'array_t',
+  UNKNOWN_T = 'unknown_t',
 
   PRINT = 'print',
   TYPE = 'type',
-  NULL = 'null',
   IF = 'if',
   ELSE = 'else',
-  OBJECT = 'object',
   DELETE = 'delete',
 
   PLUS = 'plus',

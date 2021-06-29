@@ -1,24 +1,25 @@
 import { inspectable } from 'inspectable';
 
 import { Expression } from './expression';
-import { StringValue, Value } from '../../variables/values';
+import { TypeValue, Value } from '../../variables/values';
+import { Type } from '../../types/';
 
 export class TypeExpression extends Expression {
-  constructor(private expression: Expression) {
+  constructor(public type: Type) {
     super();
   }
 
   public eval(): Value {
-    return new StringValue(this.expression.eval().type);
+    return new TypeValue(this.type);
   }
 
   public toString(): string {
-    return this.expression.toString();
+    return this.type.toString();
   }
 }
 
 inspectable(TypeExpression, {
   stringify(expression: TypeExpression, payload, context) {
-    return `${context.stylize(expression.constructor.name, 'special')}(${expression.toString()})`;
+    return `${context.stylize(expression.constructor.name, 'special')}(${context.stylize(expression.toString(), 'string')})`;
   }
 });
