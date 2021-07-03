@@ -1,5 +1,6 @@
 import { Token } from '../lexer/token';
 import { TokenType } from '../types';
+import { isLiteral } from '../utils/helpers';
 import { StringValue, Value } from '../variables';
 
 import { ObjectExpression, BinaryExpression, Expression, BoolExpression, ParenthesisExpression, StringExpression, UnaryExpression, VariableExpression, NumberExpression, NullExpression, PercentExpression, ConditionalExpression, BlockExpression, IfExpression, AssignmentExpression, ArrayExpression, TypeExpression, DeleteExpression } from './expressions';
@@ -206,7 +207,7 @@ export class Parser {
   private assignmentExpression(): Expression | null {
     const current: Token = this.get();
 
-    // let/const identifier [colon identifier] = expression
+    // let/const identifier [colon identifier/literal] = expression
     if (current.type === TokenType.LET || current.type === TokenType.CONST) {
       let isConstant: boolean = false;
 
@@ -220,17 +221,32 @@ export class Parser {
       const name: string = this.get().value!;
 
       this.consume(TokenType.IDENTIFIER);
-      this.match(TokenType.SEMICOLON);
+
+      let type: Expression | undefined;
+
+      if (this.match(TokenType.COLON)) {
+        if (!this.lookMatch(TokenType.IDENTIFIER) && !isLiteral(this.get().type)) {
+          throw new SyntaxError('expected identifier or literal');
+        }
+
+        try {
+          type = this.primary();
+        } catch (error) {
+          throw new SyntaxError('expected identifier or literal');
+        }
+      }
 
       if (this.match(TokenType.EQ)) {
         const expression: Expression = this.blockOrExpression();
 
         this.match(TokenType.SEMICOLON);
 
-        return new AssignmentExpression(isConstant, name, expression);
+        return new AssignmentExpression({ isConstant, variable: name, expression, type });
       }
 
-      return new AssignmentExpression(isConstant, name);
+      this.match(TokenType.SEMICOLON);
+
+      return new AssignmentExpression({ isConstant, variable: name, type });
     }
 
     if (this.match(TokenType.SEMICOLON)) {
@@ -421,7 +437,7 @@ export class Parser {
 
     this.match(TokenType.SEMICOLON);
 
-    throw new SyntaxError(`unknown expression type '${current.type}'`);
+    throw new SyntaxError(`unexpected token '${current.type}'`);
   }
 
 

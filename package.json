@@ -11,7 +11,8 @@
     "@types/node": "^15.12.4"
   },
   "scripts": {
-    "start:bot": "yarn build && node ./lib/bot",
+    "start:bot:dev": "ts-node src/bot",
+    "start:bot": "yarn build && node lib/bot",
     "build": "tsc --project tsconfig.json"
   },
   "repository": {

@@ -6,14 +6,36 @@ import { NullExpression } from './null-expression';
 import { NullValue, Value } from '../../variables/values';
 import { Variable, Variables } from '../../variables';
 import { AssignmentError } from '../../errors';
+import { isLiteral } from '../../utils/helpers';
+
+interface AssignmentExpressionParams {
+  isConstant: boolean;
+  variable: string;
+  expression?: Expression;
+  type?: Expression;
+}
 
 export class AssignmentExpression extends Expression {
-  constructor(
-    public isConstant: boolean,
-    public variable: string,
-    public expression: Expression = new NullExpression()
-  ) {
+  public isConstant: boolean;
+  public variable: string;
+  public expression: Expression = new NullExpression();
+  public type?: Expression;
+
+  constructor(params: AssignmentExpressionParams) {
     super();
+
+    this.isConstant = params.isConstant;
+    this.variable = params.variable;
+
+    if (params.expression) {
+      this.expression = params.expression;
+    }
+
+    if (params.type) {
+      this.type = params.type;
+
+      /// TODO: throw error if literal and no input value
+    }
   }
 
   public eval(): Value {
@@ -39,7 +61,10 @@ export class AssignmentExpression extends Expression {
   }
 
   public toString(): string {
-    return `${this.isConstant ? 'const': 'let'} ${this.variable} = ${this.expression.toString()}`;
+    const declarator: string = this.isConstant ? 'const' : 'let';
+    const type: string = this.type ? ` : ${this.type.toString()}` : ''; /// TODO: infer type
+
+    return `${declarator} ${this.variable}${type} = ${this.expression.toString()}`;
   }
 }
 
