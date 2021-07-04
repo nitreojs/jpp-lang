@@ -6,7 +6,6 @@ import { NullExpression } from './null-expression';
 import { NullValue, Value } from '../../variables/values';
 import { Variable, Variables } from '../../variables';
 import { AssignmentError } from '../../errors';
-import { isLiteral } from '../../utils/helpers';
 
 interface AssignmentExpressionParams {
   isConstant: boolean;
@@ -33,8 +32,6 @@ export class AssignmentExpression extends Expression {
 
     if (params.type) {
       this.type = params.type;
-
-      /// TODO: throw error if literal and no input value
     }
   }
 

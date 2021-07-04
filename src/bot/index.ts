@@ -158,11 +158,6 @@ hearManager.hear(/^\.\/parse(?:\s+(?<code>.+)|$)/is, async (context) => {
     const parser = new JPP.Parser(tokens);
     const block = parser.parse();
 
-    const resultIfTokens = stripIndents`
-      [Tokens]
-      ${tokens.map(token => token.toString()).join('\n')}
-    `;
-
     const resultIfExpressions = stripIndents`
       [Expressions]
       ${block.expressions.map(expression => inspect(expression)).join('\n')}
@@ -171,8 +166,6 @@ hearManager.hear(/^\.\/parse(?:\s+(?<code>.+)|$)/is, async (context) => {
     const result = stripIndents`
       [Source]
       ${code.trim()}
-
-      ${context.session.tokens && tokens.length !== 0 ? resultIfTokens : ''}
 
       ${context.session.expressions && block.expressions.length !== 0 ? resultIfExpressions : ''}
     `;
