@@ -1,7 +1,7 @@
 import { inspectable } from 'inspectable';
 
-import { Expression } from './expression';
-import { NumberValue, Value } from '../../variables/values';
+import { Expression } from '../expression';
+import { NumberValue, Value } from '../../../variables/values';
 
 export class NumberExpression extends Expression {
   constructor(private value: number) {

@@ -1,7 +1,7 @@
 import { inspectable } from 'inspectable';
 
-import { Expression } from './expression';
-import { NullValue, Value } from '../../variables/values';
+import { Expression } from '../expression';
+import { NullValue, Value } from '../../../variables/values';
 
 export class NullExpression extends Expression {
   constructor() {

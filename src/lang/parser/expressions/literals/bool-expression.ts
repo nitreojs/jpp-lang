@@ -1,10 +1,11 @@
 import { inspectable } from 'inspectable';
 
-import { Expression } from './expression';
-import { BoolValue, Value } from '../../variables/values';
+import { Expression } from '../expression';
+import { BoolValue, Value } from '../../../variables/values';
+import { TokenType } from '../../../types';
 
 export class BoolExpression extends Expression {
-  constructor(private value: boolean) {
+  constructor(private value: boolean, private token: TokenType) {
     super();
   }
 
@@ -13,6 +14,18 @@ export class BoolExpression extends Expression {
   }
 
   public toString(): string {
+    if (this.token === TokenType.MAYBE) {
+      return 'maybe';
+    }
+
+    if (this.token === TokenType.YES) {
+      return 'yes';
+    }
+
+    if (this.token === TokenType.NO) {
+      return 'no';
+    }
+
     return this.value.toString();
   }
 }

@@ -11,6 +11,7 @@ export enum TokenType {
   IF = 'if',
   ELSE = 'else',
   OBJECT = 'object',
+  MAP = 'map',
   DELETE = 'delete',
 
   PLUS = 'plus',
@@ -51,6 +52,7 @@ export enum TokenType {
   FALSE = 'false',
   YES = 'yes',
   NO = 'no',
+  MAYBE = 'maybe',
 
   LET = 'let',
   CONST = 'const',

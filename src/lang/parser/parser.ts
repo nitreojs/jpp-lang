@@ -4,6 +4,7 @@ import { isLiteral } from '../utils/helpers';
 import { StringValue, Value } from '../variables';
 
 import { ObjectExpression, BinaryExpression, Expression, BoolExpression, ParenthesisExpression, StringExpression, UnaryExpression, VariableExpression, NumberExpression, NullExpression, PercentExpression, ConditionalExpression, BlockExpression, IfExpression, AssignmentExpression, ArrayExpression, TypeExpression, DeleteExpression } from './expressions';
+import { MapExpression } from './expressions/literals/map-expression';
 
 export class Parser {
   private static EOF = new Token({ type: TokenType.EOF });
@@ -155,12 +156,9 @@ export class Parser {
     return array;
   }
 
-  private object(): Expression {
-    const object: ObjectExpression = new ObjectExpression();
-
-    this.consume(TokenType.OBJECT);
+  private objectPair(callback: (values: [Value, Value]) => any): void {
     this.consume(TokenType.LBRACE);
-
+    
     while (!this.match(TokenType.RBRACE)) {
       let key: Value | undefined;
 
@@ -171,7 +169,8 @@ export class Parser {
           throw new SyntaxError('expected key to be variable reference');
         }
 
-        key = new StringValue(expression.name);
+        // key = new StringValue(expression.name);
+        key = new StringValue(expression.eval().asString());
 
         this.consume(TokenType.RBRACKET);
       } else {
@@ -196,10 +195,28 @@ export class Parser {
 
       const value: Value = this.blockOrExpression().eval();
 
-      object.add([key, value]);
+      callback([key, value]);
 
       this.match(TokenType.COMMA);
     }
+  }
+
+  private map(): Expression {
+    const map: MapExpression = new MapExpression();
+
+    this.consume(TokenType.MAP);
+
+    this.objectPair(values => map.add(values));
+
+    return map;
+  }
+
+  private object(): Expression {
+    const object: ObjectExpression = new ObjectExpression();
+
+    this.consume(TokenType.OBJECT);
+
+    this.objectPair(values => object.add(values));
 
     return object;
   }
@@ -400,11 +417,15 @@ export class Parser {
     }
 
     if (this.match(TokenType.TRUE) || this.match(TokenType.YES)) {
-      return new BoolExpression(true);
+      return new BoolExpression(true, this.get().type);
     }
 
     if (this.match(TokenType.FALSE) || this.match(TokenType.NO)) {
-      return new BoolExpression(false);
+      return new BoolExpression(false, this.get().type);
+    }
+
+    if (this.match(TokenType.MAYBE)) {
+      return new BoolExpression(Math.random() > 0.5, TokenType.MAYBE);
     }
 
     if (this.match(TokenType.NULL)) {
@@ -433,6 +454,10 @@ export class Parser {
 
     if (this.lookMatch(TokenType.OBJECT)) {
       return this.object();
+    }
+
+    if (this.lookMatch(TokenType.MAP)) {
+      return this.map();
     }
 
     this.match(TokenType.SEMICOLON);

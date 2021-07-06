@@ -1,7 +1,7 @@
 import { inspectable } from 'inspectable';
 
 import { Expression } from './expression';
-import { NullExpression } from './null-expression';
+import { NullExpression } from './literals';
 
 import { NullValue, Value } from '../../variables/values';
 import { Variable, Variables } from '../../variables';

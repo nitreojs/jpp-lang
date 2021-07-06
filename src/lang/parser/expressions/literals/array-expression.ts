@@ -1,7 +1,7 @@
 import { inspectable } from 'inspectable';
 
-import { Expression } from './expression';
-import { ArrayValue, Value } from '../../variables/values';
+import { Expression } from '../expression';
+import { ArrayValue, Value } from '../../../variables/values';
 
 export class ArrayExpression extends Expression {
   constructor(private values: Value[] = []) {

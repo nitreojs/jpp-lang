@@ -13,6 +13,7 @@ export const TOKENS: Partial<Record<TokenType, string>> = {
   [TokenType.IF]: 'if',
   [TokenType.ELSE]: 'else',
   [TokenType.OBJECT]: 'object',
+  [TokenType.MAP]: 'map',
   [TokenType.DELETE]: 'delete',
   [TokenType.COLON]: ':',
   [TokenType.SEMICOLON]: ';',
@@ -47,12 +48,14 @@ export const IDENTIFIERS: [string, TokenType][] = [
   ['false', TokenType.FALSE],
   ['yes', TokenType.YES],
   ['no', TokenType.NO],
+  ['maybe', TokenType.MAYBE],
   ['null', TokenType.NULL],
   ['if', TokenType.IF],
   ['else', TokenType.ELSE],
   ['or', TokenType.OR],
   ['and', TokenType.AND],
   ['object', TokenType.OBJECT],
+  ['map', TokenType.MAP],
   ['delete', TokenType.DELETE]
 ];
 
