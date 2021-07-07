@@ -24,15 +24,15 @@ export class Lexer {
         this.tokenizeOctalNumber();
       } else if (Utils.isNumber(current) || (current === '.' && Utils.isNumber(next))) {
         this.tokenizeNumber();
+      } else if (current === '#' || (current === '=' && next === ')')) {
+        this.skipComment();
       } else if (Utils.isOperator(current)) {
         this.tokenizeOperator();
       } else if (Utils.isIdentifierStart(current)) {
         this.tokenizeIdentifier();
       } else if (current === '"' || current === "'") {
         this.tokenizeString(current);
-      } else if (current === '#') {
-        this.skipComment();
-      } else {
+      }else {
         this.next();
       }
     }
