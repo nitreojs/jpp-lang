@@ -45,10 +45,11 @@ export const isInteger = (source: number) => (source ^ 0) === source;
 export const isNewIdentifier = (source: string) => IDENTIFIERS.find(([name]) => source === name) !== undefined;
 export const getNewIdentifier = (source: string) => IDENTIFIERS.find(([name]) => source === name)![1];
 export const isLiteral = (source: TokenType) => (
-  source === TokenType.NUMBER ||
-  source === TokenType.STRING ||
-  source === TokenType.TRUE   ||
-  source === TokenType.FALSE  ||
-  source === TokenType.YES    ||
-  source === TokenType.NO
+  [
+    TokenType.NUMBER, TokenType.STRING,
+    TokenType.TRUE, TokenType.FALSE,
+    TokenType.YES, TokenType.NO,
+    TokenType.CREWMATE, TokenType.IMPOSTER,
+    TokenType.MAYBE
+  ].includes(source)
 );

@@ -178,6 +178,8 @@ export class Parser {
 
         if (expression instanceof VariableExpression) {
           key = new StringValue(expression.name);
+        } else if (isLiteral(this.get(-1).type)) {
+          key = new StringValue(expression.toString());
         } else if (!(expression instanceof StringExpression)) {
           throw new SyntaxError('expected key to be string or variable reference');
         } else {
@@ -189,9 +191,11 @@ export class Parser {
         this.consume(TokenType.COLON);
       } else if (this.lookMatch(TokenType.EQ)) {
         this.consume(TokenType.EQ);
-      } /* else {
-        throw new SyntaxError(`expected token 'colon' or 'eq', got '${this.get(0).type}'`);
-      } */
+      } else if (this.lookMatch(TokenType.IS)) {
+        this.consume(TokenType.IS);
+      } else if (this.lookMatch(TokenType.QUESTION)) {
+        this.consume(TokenType.QUESTION);
+      }
 
       const value: Value = this.blockOrExpression().eval();
 
@@ -224,7 +228,7 @@ export class Parser {
   private assignmentExpression(): Expression | null {
     const current: Token = this.get();
 
-    // let/const identifier [colon identifier/literal] = expression
+    // let/const identifier [colon identifier/literal] [eq/is] expression
     if (current.type === TokenType.LET || current.type === TokenType.CONST) {
       let isConstant: boolean = false;
 
@@ -253,7 +257,7 @@ export class Parser {
         }
       }
 
-      if (this.match(TokenType.EQ)) {
+      if (this.match(TokenType.EQ) || this.match(TokenType.IS)) {
         const expression: Expression = this.blockOrExpression();
 
         this.match(TokenType.SEMICOLON);
@@ -416,16 +420,16 @@ export class Parser {
       return new NumberExpression(value);
     }
 
-    if (this.match(TokenType.TRUE) || this.match(TokenType.YES)) {
-      return new BoolExpression(true, this.get().type);
+    if (this.match(TokenType.TRUE) || this.match(TokenType.YES) || this.match(TokenType.CREWMATE)) {
+      return new BoolExpression(true, this.get(-1).type);
     }
 
-    if (this.match(TokenType.FALSE) || this.match(TokenType.NO)) {
-      return new BoolExpression(false, this.get().type);
+    if (this.match(TokenType.FALSE) || this.match(TokenType.NO) || this.match(TokenType.IMPOSTER)) {
+      return new BoolExpression(false, this.get(-1).type);
     }
 
-    if (this.match(TokenType.MAYBE)) {
-      return new BoolExpression(Math.random() > 0.5, TokenType.MAYBE);
+    if (this.match(TokenType.MAYBE) || this.match(TokenType.SUS)) {
+      return new BoolExpression(Math.random() > 0.5, this.get(-1).type);
     }
 
     if (this.match(TokenType.NULL)) {

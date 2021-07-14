@@ -13,6 +13,7 @@ export enum TokenType {
   OBJECT = 'object',
   MAP = 'map',
   DELETE = 'delete',
+  IS = 'is',
 
   PLUS = 'plus',
   MINUS = 'minus',
@@ -47,12 +48,16 @@ export enum TokenType {
   AMP = 'amp',
   AMPAMP = 'ampamp',
   OR = 'or',
+  QUESTION = 'question',
 
   TRUE = 'true',
   FALSE = 'false',
   YES = 'yes',
   NO = 'no',
   MAYBE = 'maybe',
+  CREWMATE = 'crewmate',
+  IMPOSTER = 'imposter',
+  SUS = 'sus',
 
   LET = 'let',
   CONST = 'const',

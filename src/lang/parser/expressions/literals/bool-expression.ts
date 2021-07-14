@@ -18,6 +18,10 @@ export class BoolExpression extends Expression {
       return 'maybe';
     }
 
+    if (this.token === TokenType.SUS) {
+      return 'sus';
+    }
+
     if (this.token === TokenType.YES) {
       return 'yes';
     }
@@ -26,12 +30,20 @@ export class BoolExpression extends Expression {
       return 'no';
     }
 
+    if (this.token === TokenType.CREWMATE) {
+      return 'crewmate';
+    }
+
+    if (this.token === TokenType.IMPOSTER) {
+      return 'imposter';
+    }
+
     return this.value.toString();
   }
 }
 
 inspectable(BoolExpression, {
   stringify(expression: BoolExpression, payload, context) {
-    return `${context.stylize(expression.constructor.name, 'special')}(${expression.eval()})`;
+    return `${context.stylize(expression.constructor.name, 'special')}(${expression.toString()})`;
   }
 });

@@ -15,6 +15,7 @@ export const TOKENS: Partial<Record<TokenType, string>> = {
   [TokenType.OBJECT]: 'object',
   [TokenType.MAP]: 'map',
   [TokenType.DELETE]: 'delete',
+  [TokenType.IS]: 'is',
   [TokenType.COLON]: ':',
   [TokenType.SEMICOLON]: ';',
   [TokenType.COMMA]: ',',
@@ -37,6 +38,7 @@ export const TOKENS: Partial<Record<TokenType, string>> = {
   [TokenType.AMP]: '&',
   [TokenType.AMPAMP]: '&&',
   [TokenType.AND]: 'and',
+  [TokenType.QUESTION]: '?'
 };
 
 export const IDENTIFIERS: [string, TokenType][] = [
@@ -49,6 +51,9 @@ export const IDENTIFIERS: [string, TokenType][] = [
   ['yes', TokenType.YES],
   ['no', TokenType.NO],
   ['maybe', TokenType.MAYBE],
+  ['crewmate', TokenType.CREWMATE],
+  ['imposter', TokenType.IMPOSTER],
+  ['sus', TokenType.SUS],
   ['null', TokenType.NULL],
   ['if', TokenType.IF],
   ['else', TokenType.ELSE],
@@ -56,7 +61,8 @@ export const IDENTIFIERS: [string, TokenType][] = [
   ['and', TokenType.AND],
   ['object', TokenType.OBJECT],
   ['map', TokenType.MAP],
-  ['delete', TokenType.DELETE]
+  ['delete', TokenType.DELETE],
+  ['is', TokenType.IS]
 ];
 
 export const OPERATORS: Map<string, TokenType> = new Map([
@@ -95,4 +101,5 @@ export const OPERATORS: Map<string, TokenType> = new Map([
   ['&', TokenType.AMP],
   ['&&', TokenType.AMPAMP],
   ['and', TokenType.AND],
+  ['?', TokenType.QUESTION]
 ]);
